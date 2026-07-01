@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MAXTECH | Premium Technology Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+      <a class="navbar-brand text-white" href="index.html"><span class="brand-mark">MAX</span>TECH</a>
+      <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+        aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+          <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html">Products</a></li>
+          <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="login.html"><i class="fa-solid fa-user me-1"></i><span
+                data-user-name>Account</span></a></li>
+          <li class="nav-item"><a class="btn btn-outline-max ms-lg-2" href="cart.html"><i
+                class="fa-solid fa-cart-shopping me-1"></i>Cart <span data-cart-count>0</span></a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container">
+      <div class="col-lg-7">
+        <p class="eyebrow mb-3">Black. Blue. Built for speed.</p>
+        <h1>MAXTECH</h1>
+        <p class="mt-4 mb-4">Shop laptops, phones, audio gear, accessories, and gaming systems from a modern technology
+          store powered by browser-based product, cart, user, and order data.</p>
+        <div class="d-flex flex-wrap gap-2">
+          <a class="btn btn-max btn-lg" href="products.html"><i class="fa-solid fa-bag-shopping me-2"></i>Shop
+            Products</a>
+          <a class="btn btn-outline-max btn-lg" href="contact.html"><i class="fa-solid fa-headset me-2"></i>Contact
+            Sales</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section-pad">
+      <div class="container">
+        <div class="d-flex align-items-end justify-content-between gap-3 mb-4">
+          <div>
+            <p class="eyebrow mb-2">Customer favorites</p>
+            <h2 class="fw-bold mb-0">Top 3 Best-Selling Products</h2>
+          </div>
+          <a class="btn btn-outline-max d-none d-sm-inline-flex" href="products.html">View All</a>
+        </div>
+        <div class="row g-4" data-best-sellers></div>
+      </div>
+    </section>
+
+    <section class="section-pad pt-0">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="panel p-4 h-100">
+              <i class="fa-solid fa-truck-fast fa-2x text-primary mb-3"></i>
+              <h3 class="h5">Fast Delivery</h3>
+              <p class="text-muted-max mb-0">Free shipping for every order and quick processing from the MAXTECH store.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="panel p-4 h-100">
+              <i class="fa-solid fa-shield-halved fa-2x text-primary mb-3"></i>
+              <h3 class="h5">Trusted Products</h3>
+              <p class="text-muted-max mb-0">Each product includes clear specifications, ratings, and shopping details.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="panel p-4 h-100">
+              <i class="fa-solid fa-database fa-2x text-primary mb-3"></i>
+              <h3 class="h5">Browser Data System</h3>
+              <p class="text-muted-max mb-0">Products, cart, accounts, and checkout orders are retrieved and saved in
+                the browser.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer py-4">
+    <div class="container">
+      <div class="row gy-3 align-items-center">
+        <div class="col-md-5">
+          <strong><span class="brand-mark">MAX</span>TECH</strong>
+          <p class="small mb-0 text-muted-max">123 Innovation Street, New York, USA · support@maxtech.com · +1 555 0188
+          </p>
+        </div>
+        <div class="col-md-4">
+          <a class="social-link" href="#"><i class="fa-brands fa-facebook-f"></i></a>
+          <a class="social-link" href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          <a class="social-link" href="#"><i class="fa-solid fa-comment-dots"></i></a>
+          <a class="social-link" href="#"><i class="fa-brands fa-instagram"></i></a>
+        </div>
+        <div class="col-md-3 text-md-end small text-muted-max">Facebook · Twitter · Zalo · Instagram</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>
