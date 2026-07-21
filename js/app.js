@@ -12,6 +12,7 @@ const starterProducts = [
     name: "ApexBook Pro 14",
     category: "Laptops",
     price: 1299,
+    stock: 18,
     sold: 312,
     rating: 4.9,
     image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=80",
@@ -23,6 +24,7 @@ const starterProducts = [
     name: "NovaPhone X",
     category: "Phones",
     price: 899,
+    stock: 24,
     sold: 428,
     rating: 4.8,
     image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=900&q=80",
@@ -34,6 +36,7 @@ const starterProducts = [
     name: "PulseBuds Max",
     category: "Audio",
     price: 179,
+    stock: 62,
     sold: 389,
     rating: 4.7,
     image: "https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&w=900&q=80",
@@ -45,6 +48,7 @@ const starterProducts = [
     name: "Titan Gaming Desktop",
     category: "Computers",
     price: 1899,
+    stock: 9,
     sold: 146,
     rating: 4.8,
     image: "https://images.unsplash.com/photo-1593640495253-23196b27a87f?auto=format&fit=crop&w=900&q=80",
@@ -56,6 +60,7 @@ const starterProducts = [
     name: "VisionView 27 Monitor",
     category: "Accessories",
     price: 349,
+    stock: 31,
     sold: 201,
     rating: 4.6,
     image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=900&q=80",
@@ -67,6 +72,7 @@ const starterProducts = [
     name: "StrikeKey Mechanical Keyboard",
     category: "Accessories",
     price: 119,
+    stock: 45,
     sold: 268,
     rating: 4.7,
     image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=900&q=80",
@@ -78,6 +84,7 @@ const starterProducts = [
     name: "GlideMouse Wireless",
     category: "Accessories",
     price: 79,
+    stock: 54,
     sold: 244,
     rating: 4.5,
     image: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=900&q=80",
@@ -89,6 +96,7 @@ const starterProducts = [
     name: "SoundCore Studio Headset",
     category: "Audio",
     price: 249,
+    stock: 27,
     sold: 176,
     rating: 4.6,
     image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80",
@@ -100,6 +108,7 @@ const starterProducts = [
     name: "TabEdge 11",
     category: "Tablets",
     price: 599,
+    stock: 16,
     sold: 154,
     rating: 4.5,
     image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=900&q=80",
@@ -111,6 +120,7 @@ const starterProducts = [
     name: "SmartFit Watch 5",
     category: "Wearables",
     price: 229,
+    stock: 38,
     sold: 297,
     rating: 4.7,
     image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=80",
@@ -130,6 +140,20 @@ function setData(key, value) {
 function seedProducts() {
   if (!localStorage.getItem(STORAGE_KEYS.products)) {
     setData(STORAGE_KEYS.products, starterProducts);
+  }
+}
+
+function normalizeProducts() {
+  const savedProducts = getData(STORAGE_KEYS.products, starterProducts);
+  let changed = false;
+  const normalized = savedProducts.map((product, index) => {
+    if (typeof product.stock === "number") return product;
+    changed = true;
+    return { ...product, stock: starterProducts[index]?.stock || 20 };
+  });
+
+  if (changed) {
+    setData(STORAGE_KEYS.products, normalized);
   }
 }
 
@@ -153,6 +177,7 @@ function seedAdminUser() {
 
 function products() {
   seedProducts();
+  normalizeProducts();
   return getData(STORAGE_KEYS.products, []);
 }
 
@@ -166,7 +191,12 @@ function currentUser() {
 
 function updateNav() {
   const cart = getData(STORAGE_KEYS.cart, []);
-  const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const productMap = new Map(products().map((product) => [product.id, product]));
+  const count = cart.reduce((sum, item) => {
+    const product = productMap.get(item.id);
+    if (!product) return sum;
+    return sum + Math.min(item.quantity, product.stock);
+  }, 0);
   document.querySelectorAll("[data-cart-count]").forEach((el) => {
     el.textContent = count;
   });
@@ -209,10 +239,13 @@ function productCard(product) {
           </div>
           <h3 class="h5 mb-2">${product.name}</h3>
           <p class="text-muted-max small mb-3">${product.description}</p>
+          <p class="small mb-3 ${product.stock > 0 ? "text-muted-max" : "text-danger"}">
+            <i class="fa-solid fa-boxes-stacked me-1"></i>${product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
+          </p>
           <div class="d-flex align-items-center justify-content-between">
             <span class="price">${money(product.price)}</span>
-            <button class="btn btn-sm btn-max" data-add-cart="${product.id}">
-              <i class="fa-solid fa-cart-plus me-1"></i>Add
+            <button class="btn btn-sm btn-max" data-add-cart="${product.id}" ${product.stock <= 0 ? "disabled" : ""}>
+              <i class="fa-solid fa-cart-plus me-1"></i>${product.stock > 0 ? "Add" : "Sold Out"}
             </button>
           </div>
         </div>
@@ -222,24 +255,32 @@ function productCard(product) {
 }
 
 function addToCart(productId, quantity = 1) {
+  const product = products().find((item) => item.id === productId);
+  if (!product || product.stock <= 0) return false;
+
   const cart = getData(STORAGE_KEYS.cart, []);
   const found = cart.find((item) => item.id === productId);
+  const currentQuantity = found ? found.quantity : 0;
+  const allowedQuantity = Math.min(quantity, product.stock - currentQuantity);
+
+  if (allowedQuantity <= 0) return false;
 
   if (found) {
-    found.quantity += quantity;
+    found.quantity += allowedQuantity;
   } else {
-    cart.push({ id: productId, quantity });
+    cart.push({ id: productId, quantity: allowedQuantity });
   }
 
   setData(STORAGE_KEYS.cart, cart);
   updateNav();
+  return true;
 }
 
 function bindAddCartButtons() {
   document.querySelectorAll("[data-add-cart]").forEach((button) => {
     button.addEventListener("click", () => {
-      addToCart(Number(button.dataset.addCart));
-      button.innerHTML = '<i class="fa-solid fa-check me-1"></i>Added';
+      const added = addToCart(Number(button.dataset.addCart));
+      button.innerHTML = added ? '<i class="fa-solid fa-check me-1"></i>Added' : '<i class="fa-solid fa-circle-exclamation me-1"></i>Limit';
       setTimeout(() => {
         button.innerHTML = '<i class="fa-solid fa-cart-plus me-1"></i>Add';
       }, 1100);
@@ -294,6 +335,25 @@ function renderProductsPage() {
   applyFilters();
 }
 
+function productOverviewText(product) {
+  const specValues = Object.values(product.specs).join(", ");
+  return `${product.name} is designed for shoppers who want reliable ${product.category.toLowerCase()} performance with a polished MAXTECH experience. Its key configuration includes ${specValues}, making it suitable for daily productivity, entertainment, and modern digital workflows.`;
+}
+
+function productUseCase(product) {
+  const useCases = {
+    Laptops: "Best for study, office work, video meetings, design tasks, and portable productivity.",
+    Phones: "Best for mobile photography, communication, social media, streaming, and 5G browsing.",
+    Audio: "Best for music, online classes, video calls, gaming audio, and focused work sessions.",
+    Computers: "Best for gaming, streaming, content creation, multitasking, and high-performance desktop work.",
+    Accessories: "Best for upgrading a desk setup with better comfort, speed, accuracy, and daily usability.",
+    Tablets: "Best for note taking, reading, browsing, video calls, entertainment, and lightweight creative work.",
+    Wearables: "Best for fitness tracking, health monitoring, notifications, GPS workouts, and daily planning."
+  };
+
+  return useCases[product.category] || "Best for improving a modern technology setup with dependable performance and practical features.";
+}
+
 function renderProductDetails() {
   const detail = document.querySelector("[data-product-detail]");
   if (!detail) return;
@@ -307,6 +367,9 @@ function renderProductDetails() {
   }
 
   detail.innerHTML = `
+    <div class="mb-4">
+      <a class="btn btn-outline-max" href="products.html"><i class="fa-solid fa-arrow-left me-2"></i>Back to Products</a>
+    </div>
     <div class="row g-4 align-items-start">
       <div class="col-lg-6">
         <img class="detail-image rounded-2" src="${product.image}" alt="${product.name}">
@@ -316,17 +379,54 @@ function renderProductDetails() {
         <h1 class="display-6 fw-bold">${product.name}</h1>
         <div class="rating mb-3"><i class="fa-solid fa-star"></i> ${product.rating} rating - ${product.sold} sold</div>
         <p class="text-muted-max">${product.description}</p>
+        <p class="${product.stock > 0 ? "text-muted-max" : "text-danger"}"><i class="fa-solid fa-boxes-stacked text-primary me-2"></i>${product.stock > 0 ? `${product.stock} units available` : "Out of stock"}</p>
         <div class="price fs-2 mb-4">${money(product.price)}</div>
         <div class="d-flex gap-2 mb-4">
-          <input class="form-control qty-control" type="number" min="1" value="1" data-detail-qty aria-label="Quantity">
-          <button class="btn btn-max" data-detail-add="${product.id}">
-            <i class="fa-solid fa-cart-plus me-2"></i>Add to Cart
+          <input class="form-control qty-control" type="number" min="1" max="${product.stock}" value="${product.stock > 0 ? 1 : 0}" data-detail-qty aria-label="Quantity" ${product.stock <= 0 ? "disabled" : ""}>
+          <button class="btn btn-max" data-detail-add="${product.id}" ${product.stock <= 0 ? "disabled" : ""}>
+            <i class="fa-solid fa-cart-plus me-2"></i>${product.stock > 0 ? "Add to Cart" : "Sold Out"}
           </button>
         </div>
+        <div class="product-overview">
+          <div class="overview-item">
+            <i class="fa-solid fa-microchip"></i>
+            <h2 class="h6">Performance</h2>
+            <p class="small text-muted-max mb-0">Built for fast, stable use with hardware selected for everyday speed.</p>
+          </div>
+          <div class="overview-item">
+            <i class="fa-solid fa-shield-halved"></i>
+            <h2 class="h6">Reliability</h2>
+            <p class="small text-muted-max mb-0">A practical choice for customers who need dependable technology.</p>
+          </div>
+          <div class="overview-item">
+            <i class="fa-solid fa-truck-fast"></i>
+            <h2 class="h6">MAXTECH Support</h2>
+            <p class="small text-muted-max mb-0">Includes browser checkout support and store contact assistance.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 detail-section">
+      <div class="col-lg-7">
+        <div class="panel p-4 h-100">
+          <p class="eyebrow mb-2">Product overview</p>
+          <h2 class="h4 mb-3">Overview</h2>
+          <p class="text-muted-max">${productOverviewText(product)}</p>
+          <p class="text-muted-max mb-0">${productUseCase(product)}</p>
+        </div>
+      </div>
+      <div class="col-lg-5">
         <div class="panel p-3">
-          <h2 class="h5 mb-3">Specifications</h2>
+          <p class="eyebrow mb-2">Technical details</p>
+          <h2 class="h5 mb-3">Technical Specifications</h2>
           <ul class="spec-list">
             ${Object.entries(product.specs).map(([key, value]) => `<li><span>${key}</span><strong>${value}</strong></li>`).join("")}
+            <li><span>Category</span><strong>${product.category}</strong></li>
+            <li><span>Customer Rating</span><strong>${product.rating} / 5</strong></li>
+            <li><span>Units Sold</span><strong>${product.sold}</strong></li>
+            <li><span>Stock Available</span><strong>${product.stock}</strong></li>
+            <li><span>Warranty</span><strong>12 months</strong></li>
           </ul>
         </div>
       </div>
@@ -335,16 +435,16 @@ function renderProductDetails() {
 
   document.querySelector("[data-detail-add]").addEventListener("click", (event) => {
     const qty = Math.max(1, Number(document.querySelector("[data-detail-qty]").value) || 1);
-    addToCart(Number(event.currentTarget.dataset.detailAdd), qty);
-    event.currentTarget.innerHTML = '<i class="fa-solid fa-check me-2"></i>Added to Cart';
+    const added = addToCart(Number(event.currentTarget.dataset.detailAdd), qty);
+    event.currentTarget.innerHTML = added ? '<i class="fa-solid fa-check me-2"></i>Added to Cart' : '<i class="fa-solid fa-circle-exclamation me-2"></i>Stock Limit Reached';
   });
 }
 
 function cartItems() {
   const map = new Map(products().map((product) => [product.id, product]));
   return getData(STORAGE_KEYS.cart, [])
-    .map((item) => ({ ...item, product: map.get(item.id) }))
-    .filter((item) => item.product);
+    .map((item) => ({ ...item, quantity: Math.min(item.quantity, map.get(item.id)?.stock || 0), product: map.get(item.id) }))
+    .filter((item) => item.product && item.quantity > 0);
 }
 
 function cartTotal(items) {
@@ -370,11 +470,11 @@ function renderCart() {
         <img class="cart-thumb" src="${item.product.image}" alt="${item.product.name}">
         <div class="flex-grow-1">
           <h2 class="h6 mb-1">${item.product.name}</h2>
-          <p class="small text-muted-max mb-0">${item.product.category}</p>
+          <p class="small text-muted-max mb-0">${item.product.category} - ${item.product.stock} in stock</p>
         </div>
         <div class="text-end">
           <strong>${money(item.product.price)}</strong>
-          <input class="form-control form-control-sm qty-control mt-2 ms-auto" type="number" min="1" value="${item.quantity}" data-cart-qty="${item.id}" aria-label="Quantity for ${item.product.name}">
+          <input class="form-control form-control-sm qty-control mt-2 ms-auto" type="number" min="1" max="${item.product.stock}" value="${Math.min(item.quantity, item.product.stock)}" data-cart-qty="${item.id}" aria-label="Quantity for ${item.product.name}">
         </div>
         <button class="btn btn-sm btn-outline-danger" data-cart-remove="${item.id}" aria-label="Remove ${item.product.name}">
           <i class="fa-solid fa-trash"></i>
@@ -398,7 +498,8 @@ function renderCart() {
     input.addEventListener("input", () => {
       const cart = getData(STORAGE_KEYS.cart, []);
       const item = cart.find((entry) => entry.id === Number(input.dataset.cartQty));
-      if (item) item.quantity = Math.max(1, Number(input.value) || 1);
+      const product = products().find((entry) => entry.id === Number(input.dataset.cartQty));
+      if (item && product) item.quantity = Math.min(product.stock, Math.max(1, Number(input.value) || 1));
       setData(STORAGE_KEYS.cart, cart);
       renderCart();
       updateNav();
@@ -475,6 +576,7 @@ function renderCheckout() {
 
   const items = cartItems();
   const user = currentUser();
+  const invalidStockItem = items.find((item) => item.quantity > item.product.stock);
 
   if (user) {
     const nameInput = form.querySelector('[name="name"]');
@@ -485,6 +587,12 @@ function renderCheckout() {
 
   if (!items.length) {
     summary.innerHTML = '<div class="summary-panel p-4 text-center"><h2 class="h5">No items to checkout</h2><a class="btn btn-max mt-3" href="products.html">Shop Products</a></div>';
+    form.querySelector("button").disabled = true;
+    return;
+  }
+
+  if (invalidStockItem) {
+    summary.innerHTML = `<div class="summary-panel p-4 text-center"><h2 class="h5">Stock limit exceeded</h2><p class="text-muted-max">${invalidStockItem.product.name} only has ${invalidStockItem.product.stock} unit(s) available.</p><a class="btn btn-max mt-2" href="cart.html">Update Cart</a></div>`;
     form.querySelector("button").disabled = true;
     return;
   }
@@ -509,6 +617,15 @@ function renderCheckout() {
     const data = Object.fromEntries(new FormData(form).entries());
     orders.push({ id: Date.now(), customer: data, items, total: cartTotal(items), createdAt: new Date().toISOString() });
     setData(STORAGE_KEYS.orders, orders);
+    const allProducts = products();
+    items.forEach((item) => {
+      const product = allProducts.find((entry) => entry.id === item.id);
+      if (product) {
+        product.stock = Math.max(0, product.stock - item.quantity);
+        product.sold += item.quantity;
+      }
+    });
+    setData(STORAGE_KEYS.products, allProducts);
     setData(STORAGE_KEYS.cart, []);
     updateNav();
     form.innerHTML = '<div class="alert alert-success"><h1 class="h4">Order placed successfully.</h1><p class="mb-0">Thank you for shopping with MAXTECH. Your order has been saved in the browser.</p></div><a class="btn btn-max" href="index.html">Back to Home</a>';
@@ -631,6 +748,7 @@ function renderAdmin() {
                 <input class="form-control mb-2" name="name" placeholder="Product name" required>
                 <input class="form-control mb-2" name="category" placeholder="Category" required>
                 <input class="form-control mb-2" name="price" type="number" min="1" placeholder="Price" required>
+                <input class="form-control mb-2" name="stock" type="number" min="0" placeholder="Stock quantity" required>
                 <input class="form-control mb-2" name="sold" type="number" min="0" placeholder="Sold quantity" required>
                 <input class="form-control mb-2" name="rating" type="number" min="1" max="5" step="0.1" placeholder="Rating" required>
                 <input class="form-control mb-2" name="image" placeholder="Image URL" required>
@@ -647,13 +765,14 @@ function renderAdmin() {
               </div>
               <div class="table-responsive">
                 <table class="table table-dark table-hover align-middle admin-table">
-                  <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Sold</th><th></th></tr></thead>
+                  <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Sold</th><th></th></tr></thead>
                   <tbody>
                     ${allProducts.map((product) => `
                       <tr>
                         <td>${product.name}</td>
                         <td>${product.category}</td>
                         <td>${money(product.price)}</td>
+                        <td>${product.stock}</td>
                         <td>${product.sold}</td>
                         <td class="text-end">
                           <button class="btn btn-sm btn-outline-max" data-admin-edit="${product.id}"><i class="fa-solid fa-pen"></i></button>
@@ -726,6 +845,7 @@ function bindAdminActions() {
         name: data.name,
         category: data.category,
         price: Number(data.price),
+        stock: Number(data.stock),
         sold: Number(data.sold),
         rating: Number(data.rating),
         image: data.image,
@@ -755,8 +875,11 @@ function bindAdminActions() {
       if (newPrice === null) return;
       const newSold = prompt("Enter sold quantity:", product.sold);
       if (newSold === null) return;
-      product.price = Number(newPrice) || product.price;
-      product.sold = Number(newSold) || product.sold;
+      const newStock = prompt("Enter stock quantity:", product.stock);
+      if (newStock === null) return;
+      product.price = Number.isNaN(Number(newPrice)) ? product.price : Number(newPrice);
+      product.sold = Number.isNaN(Number(newSold)) ? product.sold : Number(newSold);
+      product.stock = Number.isNaN(Number(newStock)) ? product.stock : Math.max(0, Number(newStock));
       setData(STORAGE_KEYS.products, allProducts);
       renderAdmin();
     });
