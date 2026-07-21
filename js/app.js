@@ -474,7 +474,7 @@ function renderCart() {
         </div>
         <div class="text-end">
           <strong>${money(item.product.price)}</strong>
-          <input class="form-control form-control-sm qty-control mt-2 ms-auto" type="number" min="1" max="${item.product.stock}" value="${Math.min(item.quantity, item.product.stock)}" data-cart-qty="${item.id}" aria-label="Quantity for ${item.product.name}">
+          <input class="form-control form-control-sm qty-control mt-2 ms-auto" type="number" inputmode="numeric" min="1" max="${item.product.stock}" value="${Math.min(item.quantity, item.product.stock)}" data-cart-qty="${item.id}" aria-label="Quantity for ${item.product.name}">
         </div>
         <button class="btn btn-sm btn-outline-danger" data-cart-remove="${item.id}" aria-label="Remove ${item.product.name}">
           <i class="fa-solid fa-trash"></i>
@@ -494,15 +494,35 @@ function renderCart() {
     </div>
   `;
 
-  document.querySelectorAll("[data-cart-qty]").forEach((input) => {
-    input.addEventListener("input", () => {
+  function saveCartQuantity(input) {
+    const enteredQuantity = Number(input.value);
+    if (!Number.isFinite(enteredQuantity)) {
+      input.value = input.defaultValue || 1;
+      return;
+    }
+
       const cart = getData(STORAGE_KEYS.cart, []);
       const item = cart.find((entry) => entry.id === Number(input.dataset.cartQty));
       const product = products().find((entry) => entry.id === Number(input.dataset.cartQty));
-      if (item && product) item.quantity = Math.min(product.stock, Math.max(1, Number(input.value) || 1));
+      if (item && product) {
+        item.quantity = Math.min(product.stock, Math.max(1, Math.floor(enteredQuantity)));
+      }
       setData(STORAGE_KEYS.cart, cart);
       renderCart();
       updateNav();
+  }
+
+  document.querySelectorAll("[data-cart-qty]").forEach((input) => {
+    input.addEventListener("change", () => saveCartQuantity(input));
+    input.addEventListener("blur", () => {
+      if (input.value.trim() === "") input.value = input.defaultValue || 1;
+      saveCartQuantity(input);
+    });
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        input.blur();
+      }
     });
   });
 
