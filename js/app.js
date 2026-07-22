@@ -1,9 +1,11 @@
 const STORAGE_KEYS = {
   products: "maxtech_products",
+  catalogVersion: "maxtech_catalog_version",
   cart: "maxtech_cart",
   users: "maxtech_users",
   currentUser: "maxtech_current_user",
-  orders: "maxtech_orders"
+  orders: "maxtech_orders",
+  messages: "maxtech_messages"
 };
 
 const starterProducts = [
@@ -126,30 +128,220 @@ const starterProducts = [
     image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=80",
     description: "Health-focused smartwatch with GPS, sleep tracking, and bright display.",
     specs: { Display: "AMOLED", Sensors: "Heart + SpO2", GPS: "Built in", Battery: "8 days" }
+  },
+  {
+    id: 11,
+    name: "OrbitCam Creator 4K",
+    category: "Cameras",
+    price: 699,
+    stock: 14,
+    sold: 118,
+    rating: 4.6,
+    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=900&q=80",
+    description: "A compact mirrorless camera for detailed photos, travel videos, and live content.",
+    specs: { Sensor: "24MP APS-C", Video: "4K 60fps", Stabilization: "5-axis", Connectivity: "Wi-Fi + Bluetooth" }
+  },
+  {
+    id: 12,
+    name: "VaultDrive Portable SSD",
+    category: "Storage",
+    price: 159,
+    stock: 48,
+    sold: 221,
+    rating: 4.8,
+    image: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?auto=format&fit=crop&w=900&q=80",
+    description: "Pocket-sized high-speed storage for projects, backups, and large media libraries.",
+    specs: { Capacity: "2TB", Speed: "1,050MB/s", Interface: "USB 3.2 Gen 2", Protection: "Drop resistant" }
+  },
+  {
+    id: 13,
+    name: "MeshWave Wi-Fi 6E System",
+    category: "Networking",
+    price: 299,
+    stock: 23,
+    sold: 167,
+    rating: 4.6,
+    image: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=900&q=80",
+    description: "A three-node mesh system that delivers fast, stable coverage throughout the home.",
+    specs: { Standard: "Wi-Fi 6E", Coverage: "7,500 sq ft", Ports: "3 Gigabit per node", Security: "WPA3" }
+  },
+  {
+    id: 14,
+    name: "ArcControl Pro Gamepad",
+    category: "Gaming",
+    price: 89,
+    stock: 57,
+    sold: 236,
+    rating: 4.7,
+    image: "https://images.unsplash.com/photo-1592840496694-26d035b52b48?auto=format&fit=crop&w=900&q=80",
+    description: "A responsive wireless controller with precise triggers and customizable rear buttons.",
+    specs: { Connection: "2.4GHz + Bluetooth", Battery: "30 hours", Controls: "Hall effect sticks", Compatibility: "PC + Mobile" }
+  },
+  {
+    id: 15,
+    name: "PixelSight 4K Webcam",
+    category: "Cameras",
+    price: 139,
+    stock: 34,
+    sold: 184,
+    rating: 4.5,
+    image: "https://images.unsplash.com/photo-1587826080692-f439cd0b70da?auto=format&fit=crop&w=900&q=80",
+    description: "A crisp conference and streaming camera with smart framing in changing light.",
+    specs: { Resolution: "4K 30fps", Focus: "Auto", Microphones: "Dual noise reduction", Privacy: "Built-in shutter" }
+  },
+  {
+    id: 16,
+    name: "AeroDock 12-in-1 Hub",
+    category: "Accessories",
+    price: 129,
+    stock: 41,
+    sold: 198,
+    rating: 4.6,
+    image: "https://images.unsplash.com/photo-1625842268584-8f3296236761?auto=format&fit=crop&w=900&q=80",
+    description: "A versatile USB-C dock that turns one laptop port into a complete workstation.",
+    specs: { Video: "Dual 4K HDMI", Charging: "100W USB-C PD", Network: "Gigabit Ethernet", Reader: "SD + microSD" }
+  },
+  {
+    id: 17,
+    name: "FrostCore 360 RGB Cooler",
+    category: "Components",
+    price: 169,
+    stock: 20,
+    sold: 109,
+    rating: 4.7,
+    image: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=900&q=80",
+    description: "A quiet liquid CPU cooler built to handle demanding gaming and creative workloads.",
+    specs: { Radiator: "360mm", Fans: "3 x 120mm PWM", Lighting: "Addressable RGB", Support: "Intel + AMD" }
+  },
+  {
+    id: 18,
+    name: "VoltGuard 20000 Power Bank",
+    category: "Power",
+    price: 79,
+    stock: 66,
+    sold: 254,
+    rating: 4.6,
+    image: "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?auto=format&fit=crop&w=900&q=80",
+    description: "High-capacity portable power for phones, tablets, handheld consoles, and laptops.",
+    specs: { Capacity: "20,000mAh", Output: "65W USB-C PD", Ports: "2 USB-C + USB-A", Display: "Digital charge level" }
+  },
+  {
+    id: 19,
+    name: "HomeBeam Smart Projector",
+    category: "Displays",
+    price: 549,
+    stock: 12,
+    sold: 92,
+    rating: 4.5,
+    image: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=900&q=80",
+    description: "A compact smart projector for large-screen films, presentations, and console gaming.",
+    specs: { Resolution: "1080p HDR", Brightness: "900 ANSI lumens", Screen: "Up to 150 inches", Audio: "Dual 8W speakers" }
+  },
+  {
+    id: 20,
+    name: "EchoRoom Smart Speaker",
+    category: "Smart Home",
+    price: 149,
+    stock: 36,
+    sold: 173,
+    rating: 4.6,
+    image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=900&q=80",
+    description: "Room-filling wireless audio with voice control and multi-room synchronization.",
+    specs: { Drivers: "360-degree array", Wireless: "Wi-Fi + Bluetooth", Control: "Voice + Touch", Pairing: "Stereo + Multi-room" }
+  },
+  {
+    id: 21,
+    name: "Vector GX Graphics Card",
+    category: "Components",
+    price: 749,
+    stock: 11,
+    sold: 131,
+    rating: 4.8,
+    image: "https://images.unsplash.com/photo-1587202372634-32705e3bf49c?auto=format&fit=crop&w=900&q=80",
+    description: "A powerful graphics card for high-refresh gaming, rendering, and accelerated creation.",
+    specs: { Memory: "16GB GDDR6", Boost: "2.5GHz", Outputs: "3 DisplayPort + HDMI", Cooling: "Triple fan" }
+  },
+  {
+    id: 22,
+    name: "Immersion VR2 Headset",
+    category: "Gaming",
+    price: 499,
+    stock: 17,
+    sold: 103,
+    rating: 4.7,
+    image: "https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?auto=format&fit=crop&w=900&q=80",
+    description: "A standalone virtual reality headset with sharp visuals and room-scale tracking.",
+    specs: { Display: "Dual 2K", Refresh: "120Hz", Tracking: "Inside-out 6DoF", Storage: "256GB" }
   }
 ];
 
+const CATALOG_VERSION = 2;
+
 function getData(key, fallback) {
-  return JSON.parse(localStorage.getItem(key)) || fallback;
+  try {
+    const storedValue = localStorage.getItem(key);
+    return storedValue === null ? fallback : JSON.parse(storedValue) ?? fallback;
+  } catch (error) {
+    localStorage.removeItem(key);
+    return fallback;
+  }
 }
 
 function setData(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  })[character]);
+}
+
+function cleanText(value, maxLength = 500) {
+  return String(value ?? "").replace(/[<>]/g, "").trim().slice(0, maxLength);
+}
+
+function bindNumericInputs() {
+  document.querySelectorAll("[data-numeric]").forEach((input) => {
+    input.addEventListener("input", () => {
+      input.value = input.value.replace(/\D/g, "");
+    });
+  });
+}
+
+function safeReturnPage(value) {
+  const allowedPages = new Set(["index.html", "products.html", "cart.html", "checkout.html", "profile.html", "admin.html"]);
+  return allowedPages.has(value) ? value : "index.html";
+}
+
 function seedProducts() {
   if (!localStorage.getItem(STORAGE_KEYS.products)) {
     setData(STORAGE_KEYS.products, starterProducts);
+    localStorage.setItem(STORAGE_KEYS.catalogVersion, String(CATALOG_VERSION));
+    return;
+  }
+
+  const savedVersion = Number(localStorage.getItem(STORAGE_KEYS.catalogVersion) || 1);
+  if (savedVersion < CATALOG_VERSION) {
+    const savedProducts = getData(STORAGE_KEYS.products, []);
+    const savedIds = new Set(savedProducts.map((product) => product.id));
+    const newProducts = starterProducts.filter((product) => product.id >= 11 && !savedIds.has(product.id));
+    setData(STORAGE_KEYS.products, [...savedProducts, ...newProducts]);
+    localStorage.setItem(STORAGE_KEYS.catalogVersion, String(CATALOG_VERSION));
   }
 }
 
 function normalizeProducts() {
   const savedProducts = getData(STORAGE_KEYS.products, starterProducts);
   let changed = false;
-  const normalized = savedProducts.map((product, index) => {
+  const normalized = savedProducts.map((product) => {
     if (typeof product.stock === "number") return product;
     changed = true;
-    return { ...product, stock: starterProducts[index]?.stock || 20 };
+    return { ...product, stock: starterProducts.find((starter) => starter.id === product.id)?.stock || 20 };
   });
 
   if (changed) {
@@ -189,6 +381,35 @@ function currentUser() {
   return getData(STORAGE_KEYS.currentUser, null);
 }
 
+function renderFooter() {
+  document.querySelectorAll("[data-site-footer]").forEach((footer) => {
+    footer.innerHTML = `
+      <div class="container">
+        <div class="row gy-3 align-items-center">
+          <div class="col-lg-4">
+            <a class="navbar-brand text-white" href="index.html"><span class="brand-mark">MAX</span>TECH</a>
+            <p class="small text-muted-max mb-0 mt-1">Technology for work, play, and everything between.</p>
+          </div>
+          <div class="col-lg-5 footer-contact small">
+            <a href="mailto:support@maxtech.com"><i class="fa-solid fa-envelope brand-mark me-2"></i>support@maxtech.com</a>
+            <a href="tel:+15550188"><i class="fa-solid fa-phone brand-mark me-2"></i>+1 555 0188</a>
+          </div>
+          <div class="col-lg-3 text-lg-end">
+            <a class="social-link" href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="MAXTECH on Facebook" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a class="social-link" href="https://x.com/" target="_blank" rel="noopener noreferrer" aria-label="MAXTECH on X" title="X"><i class="fa-brands fa-x-twitter"></i></a>
+            <a class="social-link" href="https://zalo.me/" target="_blank" rel="noopener noreferrer" aria-label="MAXTECH on Zalo" title="Zalo"><i class="fa-solid fa-comment-dots"></i></a>
+            <a class="social-link" href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="MAXTECH on Instagram" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          </div>
+        </div>
+        <div class="footer-bottom d-flex flex-wrap justify-content-between gap-2 small text-muted-max">
+          <span>&copy; ${new Date().getFullYear()} MAXTECH. All rights reserved.</span>
+          <span>123 Innovation Street, New York, USA</span>
+        </div>
+      </div>
+    `;
+  });
+}
+
 function updateNav() {
   const cart = getData(STORAGE_KEYS.cart, []);
   const productMap = new Map(products().map((product) => [product.id, product]));
@@ -223,28 +444,51 @@ function updateNav() {
       existingAdminLink.remove();
     }
   });
+
+  const currentPage = window.location.pathname.split("/").pop() || "index.html";
+  const activePage = {
+    "product-details.html": "products.html",
+    "checkout.html": "cart.html",
+    "login.html": user ? "profile.html" : "login.html",
+    "register.html": user ? "profile.html" : "login.html"
+  }[currentPage] || currentPage;
+
+  document.querySelectorAll("nav a").forEach((link) => {
+    link.classList.remove("active");
+    link.removeAttribute("aria-current");
+    const href = (link.getAttribute("href") || "").split("?")[0];
+    if (href === activePage) {
+      link.classList.add("active");
+      link.setAttribute("aria-current", "page");
+    }
+  });
 }
 
 function productCard(product) {
+  const name = escapeHtml(product.name);
+  const category = escapeHtml(product.category);
+  const description = escapeHtml(product.description);
+  const image = escapeHtml(product.image);
+
   return `
     <div class="col-sm-6 col-lg-4">
       <article class="product-card">
-        <a href="product-details.html?id=${product.id}" aria-label="View ${product.name}">
-          <img src="${product.image}" alt="${product.name}">
+        <a href="product-details.html?id=${product.id}" aria-label="View ${name}">
+          <img src="${image}" alt="${name}" loading="lazy">
         </a>
-        <div class="p-3">
+        <div class="p-3 product-card-body">
           <div class="d-flex align-items-center justify-content-between mb-2">
-            <span class="badge text-bg-primary">${product.category}</span>
+            <span class="badge text-bg-primary">${category}</span>
             <span class="rating"><i class="fa-solid fa-star"></i> ${product.rating}</span>
           </div>
-          <h3 class="h5 mb-2">${product.name}</h3>
-          <p class="text-muted-max small mb-3">${product.description}</p>
+          <h3 class="h5 mb-2"><a href="product-details.html?id=${product.id}">${name}</a></h3>
+          <p class="text-muted-max small mb-3 product-description">${description}</p>
           <p class="small mb-3 ${product.stock > 0 ? "text-muted-max" : "text-danger"}">
             <i class="fa-solid fa-boxes-stacked me-1"></i>${product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
           </p>
-          <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center justify-content-between product-card-actions">
             <span class="price">${money(product.price)}</span>
-            <button class="btn btn-sm btn-max" data-add-cart="${product.id}" ${product.stock <= 0 ? "disabled" : ""}>
+            <button class="btn btn-sm btn-max" data-add-cart="${product.id}" aria-label="Add ${name} to cart" ${product.stock <= 0 ? "disabled" : ""}>
               <i class="fa-solid fa-cart-plus me-1"></i>${product.stock > 0 ? "Add" : "Sold Out"}
             </button>
           </div>
@@ -348,7 +592,15 @@ function productUseCase(product) {
     Computers: "Best for gaming, streaming, content creation, multitasking, and high-performance desktop work.",
     Accessories: "Best for upgrading a desk setup with better comfort, speed, accuracy, and daily usability.",
     Tablets: "Best for note taking, reading, browsing, video calls, entertainment, and lightweight creative work.",
-    Wearables: "Best for fitness tracking, health monitoring, notifications, GPS workouts, and daily planning."
+    Wearables: "Best for fitness tracking, health monitoring, notifications, GPS workouts, and daily planning.",
+    Cameras: "Best for photography, video production, streaming, meetings, and travel content.",
+    Storage: "Best for fast backups, project libraries, portable files, and expanding device capacity.",
+    Networking: "Best for reliable home coverage, remote work, gaming, streaming, and connected devices.",
+    Gaming: "Best for responsive gameplay, immersive entertainment, and multi-platform setups.",
+    Components: "Best for building, cooling, and upgrading high-performance desktop systems.",
+    Power: "Best for keeping phones, tablets, handhelds, and laptops charged while traveling.",
+    Displays: "Best for films, presentations, console gaming, and flexible large-screen viewing.",
+    "Smart Home": "Best for connected rooms, voice control, wireless audio, and daily automation."
   };
 
   return useCases[product.category] || "Best for improving a modern technology setup with dependable performance and practical features.";
@@ -366,19 +618,25 @@ function renderProductDetails() {
     return;
   }
 
+  const name = escapeHtml(product.name);
+  const category = escapeHtml(product.category);
+  const description = escapeHtml(product.description);
+  const image = escapeHtml(product.image);
+  document.title = `${product.name} | MAXTECH`;
+
   detail.innerHTML = `
     <div class="mb-4">
       <a class="btn btn-outline-max" href="products.html"><i class="fa-solid fa-arrow-left me-2"></i>Back to Products</a>
     </div>
     <div class="row g-4 align-items-start">
       <div class="col-lg-6">
-        <img class="detail-image rounded-2" src="${product.image}" alt="${product.name}">
+        <img class="detail-image rounded-2" src="${image}" alt="${name}">
       </div>
       <div class="col-lg-6">
-        <span class="badge text-bg-primary mb-3">${product.category}</span>
-        <h1 class="display-6 fw-bold">${product.name}</h1>
+        <span class="badge text-bg-primary mb-3">${category}</span>
+        <h1 class="display-6 fw-bold">${name}</h1>
         <div class="rating mb-3"><i class="fa-solid fa-star"></i> ${product.rating} rating - ${product.sold} sold</div>
-        <p class="text-muted-max">${product.description}</p>
+        <p class="text-muted-max">${description}</p>
         <p class="${product.stock > 0 ? "text-muted-max" : "text-danger"}"><i class="fa-solid fa-boxes-stacked text-primary me-2"></i>${product.stock > 0 ? `${product.stock} units available` : "Out of stock"}</p>
         <div class="price fs-2 mb-4">${money(product.price)}</div>
         <div class="d-flex gap-2 mb-4">
@@ -412,8 +670,8 @@ function renderProductDetails() {
         <div class="panel p-4 h-100">
           <p class="eyebrow mb-2">Product overview</p>
           <h2 class="h4 mb-3">Overview</h2>
-          <p class="text-muted-max">${productOverviewText(product)}</p>
-          <p class="text-muted-max mb-0">${productUseCase(product)}</p>
+          <p class="text-muted-max">${escapeHtml(productOverviewText(product))}</p>
+          <p class="text-muted-max mb-0">${escapeHtml(productUseCase(product))}</p>
         </div>
       </div>
       <div class="col-lg-5">
@@ -421,8 +679,8 @@ function renderProductDetails() {
           <p class="eyebrow mb-2">Technical details</p>
           <h2 class="h5 mb-3">Technical Specifications</h2>
           <ul class="spec-list">
-            ${Object.entries(product.specs).map(([key, value]) => `<li><span>${key}</span><strong>${value}</strong></li>`).join("")}
-            <li><span>Category</span><strong>${product.category}</strong></li>
+            ${Object.entries(product.specs).map(([key, value]) => `<li><span>${escapeHtml(key)}</span><strong>${escapeHtml(value)}</strong></li>`).join("")}
+            <li><span>Category</span><strong>${category}</strong></li>
             <li><span>Customer Rating</span><strong>${product.rating} / 5</strong></li>
             <li><span>Units Sold</span><strong>${product.sold}</strong></li>
             <li><span>Stock Available</span><strong>${product.stock}</strong></li>
@@ -437,6 +695,9 @@ function renderProductDetails() {
     const qty = Math.max(1, Number(document.querySelector("[data-detail-qty]").value) || 1);
     const added = addToCart(Number(event.currentTarget.dataset.detailAdd), qty);
     event.currentTarget.innerHTML = added ? '<i class="fa-solid fa-check me-2"></i>Added to Cart' : '<i class="fa-solid fa-circle-exclamation me-2"></i>Stock Limit Reached';
+    setTimeout(() => {
+      event.currentTarget.innerHTML = '<i class="fa-solid fa-cart-plus me-2"></i>Add to Cart';
+    }, 1400);
   });
 }
 
@@ -449,6 +710,19 @@ function cartItems() {
 
 function cartTotal(items) {
   return items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+}
+
+function cartSummaryMarkup(items) {
+  return `
+    <div class="summary-panel p-4">
+      <h2 class="h5 mb-3">Order Summary</h2>
+      <div class="d-flex justify-content-between mb-2"><span>Subtotal</span><strong>${money(cartTotal(items))}</strong></div>
+      <div class="d-flex justify-content-between mb-2"><span>Shipping</span><strong>Free</strong></div>
+      <hr class="border-secondary">
+      <div class="d-flex justify-content-between fs-5 mb-3"><span>Total</span><strong class="price">${money(cartTotal(items))}</strong></div>
+      <a class="btn btn-max w-100" href="checkout.html"><i class="fa-solid fa-lock me-2"></i>Secure Checkout</a>
+    </div>
+  `;
 }
 
 function renderCart() {
@@ -466,54 +740,55 @@ function renderCart() {
 
   target.innerHTML = items.map((item) => `
     <div class="cart-row p-3 mb-3">
-      <div class="d-flex gap-3 align-items-center">
-        <img class="cart-thumb" src="${item.product.image}" alt="${item.product.name}">
-        <div class="flex-grow-1">
-          <h2 class="h6 mb-1">${item.product.name}</h2>
-          <p class="small text-muted-max mb-0">${item.product.category} - ${item.product.stock} in stock</p>
+      <div class="cart-row-main">
+        <a href="product-details.html?id=${item.id}" aria-label="View ${escapeHtml(item.product.name)}">
+          <img class="cart-thumb" src="${escapeHtml(item.product.image)}" alt="${escapeHtml(item.product.name)}">
+        </a>
+        <div class="cart-product-info flex-grow-1">
+          <h2 class="h6 mb-1"><a href="product-details.html?id=${item.id}">${escapeHtml(item.product.name)}</a></h2>
+          <p class="small text-muted-max mb-0">${escapeHtml(item.product.category)} - ${item.product.stock} in stock</p>
         </div>
-        <div class="text-end">
+        <div class="text-end cart-price-qty">
           <strong>${money(item.product.price)}</strong>
           <input class="form-control form-control-sm qty-control mt-2 ms-auto" type="number" inputmode="numeric" min="1" max="${item.product.stock}" value="${Math.min(item.quantity, item.product.stock)}" data-cart-qty="${item.id}" aria-label="Quantity for ${item.product.name}">
         </div>
-        <button class="btn btn-sm btn-outline-danger" data-cart-remove="${item.id}" aria-label="Remove ${item.product.name}">
+        <button class="btn btn-sm btn-outline-danger icon-button" data-cart-remove="${item.id}" aria-label="Remove ${escapeHtml(item.product.name)}" title="Remove product">
           <i class="fa-solid fa-trash"></i>
         </button>
       </div>
     </div>
   `).join("");
 
-  summary.innerHTML = `
-    <div class="summary-panel p-4">
-      <h2 class="h5 mb-3">Order Summary</h2>
-      <div class="d-flex justify-content-between mb-2"><span>Subtotal</span><strong>${money(cartTotal(items))}</strong></div>
-      <div class="d-flex justify-content-between mb-2"><span>Shipping</span><strong>Free</strong></div>
-      <hr class="border-secondary">
-      <div class="d-flex justify-content-between fs-5 mb-3"><span>Total</span><strong class="price">${money(cartTotal(items))}</strong></div>
-      <a class="btn btn-max w-100" href="checkout.html"><i class="fa-solid fa-credit-card me-2"></i>Checkout</a>
-    </div>
-  `;
+  summary.innerHTML = cartSummaryMarkup(items);
 
-  function saveCartQuantity(input) {
+  function saveCartQuantity(input, rerender = true) {
     const enteredQuantity = Number(input.value);
     if (!Number.isFinite(enteredQuantity)) {
-      input.value = input.defaultValue || 1;
-      return;
+      return false;
     }
 
-      const cart = getData(STORAGE_KEYS.cart, []);
-      const item = cart.find((entry) => entry.id === Number(input.dataset.cartQty));
-      const product = products().find((entry) => entry.id === Number(input.dataset.cartQty));
-      if (item && product) {
-        item.quantity = Math.min(product.stock, Math.max(1, Math.floor(enteredQuantity)));
-      }
-      setData(STORAGE_KEYS.cart, cart);
+    const cart = getData(STORAGE_KEYS.cart, []);
+    const item = cart.find((entry) => entry.id === Number(input.dataset.cartQty));
+    const product = products().find((entry) => entry.id === Number(input.dataset.cartQty));
+    if (!item || !product) return false;
+
+    item.quantity = Math.min(product.stock, Math.max(1, Math.floor(enteredQuantity)));
+    input.value = item.quantity;
+    setData(STORAGE_KEYS.cart, cart);
+
+    if (rerender) {
       renderCart();
-      updateNav();
+    } else {
+      summary.innerHTML = cartSummaryMarkup(cartItems());
+    }
+    updateNav();
+    return true;
   }
 
   document.querySelectorAll("[data-cart-qty]").forEach((input) => {
-    input.addEventListener("change", () => saveCartQuantity(input));
+    input.addEventListener("input", () => {
+      if (input.value.trim() !== "") saveCartQuantity(input, false);
+    });
     input.addEventListener("blur", () => {
       if (input.value.trim() === "") input.value = input.defaultValue || 1;
       saveCartQuantity(input);
@@ -521,7 +796,8 @@ function renderCart() {
     input.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
         event.preventDefault();
-        input.blur();
+        if (input.value.trim() === "") input.value = input.defaultValue || 1;
+        saveCartQuantity(input);
       }
     });
   });
@@ -539,6 +815,16 @@ function bindAuth() {
   const registerForm = document.querySelector("[data-register-form]");
   const loginForm = document.querySelector("[data-login-form]");
   const authMessage = document.querySelector("[data-auth-message]");
+  const returnPage = safeReturnPage(new URLSearchParams(window.location.search).get("return"));
+
+  if (returnPage !== "index.html") {
+    document.querySelectorAll('a[href="register.html"]').forEach((link) => {
+      link.href = `register.html?return=${encodeURIComponent(returnPage)}`;
+    });
+    document.querySelectorAll('a[href="login.html"]').forEach((link) => {
+      link.href = `login.html?return=${encodeURIComponent(returnPage)}`;
+    });
+  }
 
   if (registerForm) {
     registerForm.addEventListener("submit", (event) => {
@@ -554,18 +840,18 @@ function bindAuth() {
       }
 
       const user = {
-        name: data.get("name").trim(),
+        name: cleanText(data.get("name"), 80),
         email,
         password: data.get("password"),
-        phone: data.get("phone") || "",
-        address: data.get("address") || "",
+        phone: (data.get("phone") || "").replace(/\D/g, ""),
+        address: cleanText(data.get("address"), 180),
         role: "customer",
         createdAt: new Date().toISOString()
       };
       users.push(user);
       setData(STORAGE_KEYS.users, users);
       setData(STORAGE_KEYS.currentUser, { name: user.name, email: user.email, role: user.role });
-      window.location.href = "index.html";
+      window.location.href = returnPage;
     });
   }
 
@@ -584,7 +870,7 @@ function bindAuth() {
       }
 
       setData(STORAGE_KEYS.currentUser, { name: user.name, email: user.email, role: user.role || "customer" });
-      window.location.href = "index.html";
+      window.location.href = returnPage;
     });
   }
 }
@@ -598,12 +884,35 @@ function renderCheckout() {
   const user = currentUser();
   const invalidStockItem = items.find((item) => item.quantity > item.product.stock);
 
-  if (user) {
-    const nameInput = form.querySelector('[name="name"]');
-    const emailInput = form.querySelector('[name="email"]');
-    nameInput.value = user.name;
-    emailInput.value = user.email;
+  if (!user) {
+    form.innerHTML = `
+      <div class="alert alert-warning mb-0">
+        <h2 class="h5">Login required</h2>
+        <p class="mb-3">You must login before you can successfully purchase products.</p>
+        <a class="btn btn-max" href="login.html?return=checkout.html"><i class="fa-solid fa-right-to-bracket me-2"></i>Login to Checkout</a>
+      </div>
+    `;
+    summary.innerHTML = `
+      <div class="summary-panel p-4 text-center">
+        <i class="fa-solid fa-user-lock fa-2x text-primary mb-3"></i>
+        <h2 class="h5">Account Required</h2>
+        <p class="text-muted-max mb-0">Your cart is saved in the browser and will remain available after login.</p>
+      </div>
+    `;
+    return;
   }
+
+  const fullUser = getData(STORAGE_KEYS.users, []).find((entry) => entry.email === user.email) || user;
+  const nameInput = form.querySelector('[name="name"]');
+  const emailInput = form.querySelector('[name="email"]');
+  const addressInput = form.querySelector('[name="address"]');
+  const phoneInput = form.querySelector('[name="phone"]');
+  nameInput.value = fullUser.name;
+  emailInput.value = fullUser.email;
+  addressInput.value = fullUser.address || "";
+  phoneInput.value = String(fullUser.phone || "").replace(/\D/g, "");
+  nameInput.readOnly = true;
+  emailInput.readOnly = true;
 
   if (!items.length) {
     summary.innerHTML = '<div class="summary-panel p-4 text-center"><h2 class="h5">No items to checkout</h2><a class="btn btn-max mt-3" href="products.html">Shop Products</a></div>';
@@ -612,7 +921,7 @@ function renderCheckout() {
   }
 
   if (invalidStockItem) {
-    summary.innerHTML = `<div class="summary-panel p-4 text-center"><h2 class="h5">Stock limit exceeded</h2><p class="text-muted-max">${invalidStockItem.product.name} only has ${invalidStockItem.product.stock} unit(s) available.</p><a class="btn btn-max mt-2" href="cart.html">Update Cart</a></div>`;
+    summary.innerHTML = `<div class="summary-panel p-4 text-center"><h2 class="h5">Stock limit exceeded</h2><p class="text-muted-max">${escapeHtml(invalidStockItem.product.name)} only has ${invalidStockItem.product.stock} unit(s) available.</p><a class="btn btn-max mt-2" href="cart.html">Update Cart</a></div>`;
     form.querySelector("button").disabled = true;
     return;
   }
@@ -622,7 +931,7 @@ function renderCheckout() {
       <h2 class="h5 mb-3">Checkout Summary</h2>
       ${items.map((item) => `
         <div class="d-flex justify-content-between gap-3 mb-2">
-          <span>${item.product.name} x ${item.quantity}</span>
+          <span>${escapeHtml(item.product.name)} x ${item.quantity}</span>
           <strong>${money(item.product.price * item.quantity)}</strong>
         </div>
       `).join("")}
@@ -635,8 +944,32 @@ function renderCheckout() {
     event.preventDefault();
     const orders = getData(STORAGE_KEYS.orders, []);
     const data = Object.fromEntries(new FormData(form).entries());
-    orders.push({ id: Date.now(), customer: data, items, total: cartTotal(items), createdAt: new Date().toISOString() });
+    data.name = fullUser.name;
+    data.email = fullUser.email;
+    data.address = cleanText(data.address, 180);
+    data.phone = String(data.phone || "").replace(/\D/g, "");
+    data.payment = cleanText(data.payment, 40);
+    data.note = cleanText(data.note, 500);
+    const orderId = Date.now();
+    const orderCode = `MT-${orderId}`;
+    const orderItems = items.map((item) => ({
+      id: item.id,
+      name: item.product.name,
+      category: item.product.category,
+      price: item.product.price,
+      quantity: item.quantity,
+      subtotal: item.product.price * item.quantity,
+      image: item.product.image
+    }));
+    orders.push({ id: orderId, code: orderCode, customer: data, items: orderItems, total: cartTotal(items), status: "Pending", createdAt: new Date().toISOString() });
     setData(STORAGE_KEYS.orders, orders);
+    const users = getData(STORAGE_KEYS.users, []);
+    const savedUser = users.find((entry) => entry.email === fullUser.email);
+    if (savedUser) {
+      savedUser.address = data.address;
+      savedUser.phone = data.phone;
+      setData(STORAGE_KEYS.users, users);
+    }
     const allProducts = products();
     items.forEach((item) => {
       const product = allProducts.find((entry) => entry.id === item.id);
@@ -648,7 +981,7 @@ function renderCheckout() {
     setData(STORAGE_KEYS.products, allProducts);
     setData(STORAGE_KEYS.cart, []);
     updateNav();
-    form.innerHTML = '<div class="alert alert-success"><h1 class="h4">Order placed successfully.</h1><p class="mb-0">Thank you for shopping with MAXTECH. Your order has been saved in the browser.</p></div><a class="btn btn-max" href="index.html">Back to Home</a>';
+    form.innerHTML = `<div class="alert alert-success"><h1 class="h4">Order placed successfully.</h1><p class="mb-1">Order code: <strong>${orderCode}</strong></p><p class="mb-0">You can track this purchase from your profile.</p></div><a class="btn btn-max" href="profile.html"><i class="fa-solid fa-receipt me-2"></i>View Order History</a>`;
     summary.innerHTML = "";
   });
 }
@@ -682,19 +1015,41 @@ function renderProfile() {
   }
 
   const fullUser = getData(STORAGE_KEYS.users, []).find((entry) => entry.email === user.email) || user;
-  const orders = getData(STORAGE_KEYS.orders, []).filter((order) => order.customer.email === user.email);
+  const orders = getData(STORAGE_KEYS.orders, [])
+    .filter((order) => order.customer?.email === user.email)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const productMap = new Map(products().map((product) => [product.id, product]));
+
+  function orderProductRows(order) {
+    return (order.items || []).map((item) => {
+      const product = item.product || productMap.get(item.id) || item;
+      const name = item.name || product.name || "Product";
+      const category = item.category || product.category || "Product";
+      const price = Number(item.price || product.price || 0);
+      const quantity = Number(item.quantity || 1);
+      return `
+        <div class="order-product">
+          <div>
+            <strong>${escapeHtml(name)}</strong>
+            <p class="small text-muted-max mb-0">${escapeHtml(category)} - Quantity: ${quantity} - Unit price: ${money(price)}</p>
+          </div>
+          <strong>${money(price * quantity)}</strong>
+        </div>
+      `;
+    }).join("");
+  }
 
   target.innerHTML = `
     <div class="row g-4">
       <div class="col-lg-4">
         <div class="panel p-4 h-100">
-          <div class="profile-avatar mb-3">${fullUser.name.charAt(0).toUpperCase()}</div>
-          <h1 class="h3">${fullUser.name}</h1>
-          <p class="text-muted-max mb-1">${fullUser.email}</p>
-          <span class="badge text-bg-primary">${fullUser.role || "customer"}</span>
+          <div class="profile-avatar mb-3">${escapeHtml((fullUser.name || "U").charAt(0).toUpperCase())}</div>
+          <h1 class="h3">${escapeHtml(fullUser.name || "MAXTECH User")}</h1>
+          <p class="text-muted-max mb-1">${escapeHtml(fullUser.email)}</p>
+          <span class="badge text-bg-primary">${escapeHtml(fullUser.role || "customer")}</span>
           <hr class="border-secondary">
-          <p class="mb-2"><i class="fa-solid fa-phone text-primary me-2"></i>${fullUser.phone || "No phone saved"}</p>
-          <p class="mb-3"><i class="fa-solid fa-location-dot text-primary me-2"></i>${fullUser.address || "No address saved"}</p>
+          <p class="mb-2"><i class="fa-solid fa-phone text-primary me-2"></i>${escapeHtml(fullUser.phone || "No phone saved")}</p>
+          <p class="mb-3"><i class="fa-solid fa-location-dot text-primary me-2"></i>${escapeHtml(fullUser.address || "No address saved")}</p>
           <button class="btn btn-outline-danger w-100" data-logout><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</button>
           ${fullUser.role === "admin" ? '<a class="btn btn-max w-100 mt-2" href="admin.html"><i class="fa-solid fa-gauge-high me-2"></i>Open Admin Page</a>' : ""}
         </div>
@@ -703,12 +1058,16 @@ function renderProfile() {
         <div class="panel p-4">
           <h2 class="h4 mb-3">Order History</h2>
           ${orders.length ? orders.map((order) => `
-            <div class="admin-row">
-              <div>
-                <strong>Order #${order.id}</strong>
-                <p class="small text-muted-max mb-0">${new Date(order.createdAt).toLocaleString()} - ${order.items.length} item group(s)</p>
+            <div class="order-history-card">
+              <div class="d-flex justify-content-between gap-3 align-items-start mb-3">
+                <div>
+                  <strong>Order Code: ${escapeHtml(order.code || `MT-${order.id}`)}</strong>
+                  <p class="small text-muted-max mb-1">${new Date(order.createdAt).toLocaleString()} - ${(order.items || []).length} product group(s)</p>
+                  <span class="status-badge"><i class="fa-solid fa-circle-info"></i>${escapeHtml(order.status || "Pending")}</span>
+                </div>
+                <strong class="price">${money(order.total)}</strong>
               </div>
-              <strong class="price">${money(order.total)}</strong>
+              ${orderProductRows(order)}
             </div>
           `).join("") : '<p class="text-muted-max mb-0">No orders yet.</p>'}
         </div>
@@ -723,7 +1082,7 @@ function isAdmin() {
   return Boolean(user && user.role === "admin");
 }
 
-function renderAdmin() {
+function renderAdmin(activeTab = "productsTab") {
   const target = document.querySelector("[data-admin]");
   if (!target) return;
 
@@ -733,8 +1092,8 @@ function renderAdmin() {
         <div>
           <i class="fa-solid fa-lock fa-2x mb-3 text-primary"></i>
           <h1 class="h4">Admin access required.</h1>
-          <p class="text-muted-max">Login with admin@maxtech.com and password admin123.</p>
-          <a class="btn btn-max" href="login.html">Login as Admin</a>
+          <p class="text-muted-max">Sign in with an administrator account to manage the sales system.</p>
+          <a class="btn btn-max" href="login.html?return=admin.html">Administrator Login</a>
         </div>
       </div>
     `;
@@ -744,6 +1103,7 @@ function renderAdmin() {
   const allProducts = products();
   const users = getData(STORAGE_KEYS.users, []);
   const orders = getData(STORAGE_KEYS.orders, []);
+  const messages = getData(STORAGE_KEYS.messages, []);
   const revenue = orders.reduce((sum, order) => sum + Number(order.total || 0), 0);
 
   target.innerHTML = `
@@ -757,23 +1117,31 @@ function renderAdmin() {
       <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#productsTab" type="button">Products</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#ordersTab" type="button">Orders</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#usersTab" type="button">Users</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#messagesTab" type="button">Messages${messages.some((message) => message.status === "New") ? ` <span class="badge text-bg-primary">${messages.filter((message) => message.status === "New").length}</span>` : ""}</button></li>
     </ul>
     <div class="tab-content">
       <section class="tab-pane fade show active" id="productsTab">
         <div class="row g-4">
           <div class="col-lg-4">
             <div class="panel p-4">
-              <h2 class="h5 mb-3">Add Product</h2>
+              <h2 class="h5 mb-3" data-admin-form-title>Add Product</h2>
+              <div class="d-none" data-admin-product-message></div>
               <form data-admin-product-form>
-                <input class="form-control mb-2" name="name" placeholder="Product name" required>
-                <input class="form-control mb-2" name="category" placeholder="Category" required>
-                <input class="form-control mb-2" name="price" type="number" min="1" placeholder="Price" required>
-                <input class="form-control mb-2" name="stock" type="number" min="0" placeholder="Stock quantity" required>
-                <input class="form-control mb-2" name="sold" type="number" min="0" placeholder="Sold quantity" required>
-                <input class="form-control mb-2" name="rating" type="number" min="1" max="5" step="0.1" placeholder="Rating" required>
-                <input class="form-control mb-2" name="image" placeholder="Image URL" required>
-                <textarea class="form-control mb-3" name="description" rows="3" placeholder="Description" required></textarea>
-                <button class="btn btn-max w-100" type="submit"><i class="fa-solid fa-plus me-2"></i>Add Product</button>
+                <input name="id" type="hidden">
+                <div class="mb-3"><label class="form-label" for="adminProductName">Product name</label><input class="form-control" id="adminProductName" name="name" required></div>
+                <div class="mb-3"><label class="form-label" for="adminProductCategory">Category</label><input class="form-control" id="adminProductCategory" name="category" required></div>
+                <div class="row g-2 mb-3">
+                  <div class="col-6"><label class="form-label" for="adminProductPrice">Price</label><input class="form-control" id="adminProductPrice" name="price" type="number" min="1" step="0.01" required></div>
+                  <div class="col-6"><label class="form-label" for="adminProductStock">Stock</label><input class="form-control" id="adminProductStock" name="stock" type="number" min="0" required></div>
+                  <div class="col-6"><label class="form-label" for="adminProductSold">Units sold</label><input class="form-control" id="adminProductSold" name="sold" type="number" min="0" required></div>
+                  <div class="col-6"><label class="form-label" for="adminProductRating">Rating</label><input class="form-control" id="adminProductRating" name="rating" type="number" min="1" max="5" step="0.1" required></div>
+                </div>
+                <div class="mb-3"><label class="form-label" for="adminProductImage">Image URL</label><input class="form-control" id="adminProductImage" name="image" type="url" required></div>
+                <div class="mb-3"><label class="form-label" for="adminProductDescription">Description</label><textarea class="form-control" id="adminProductDescription" name="description" rows="4" required></textarea></div>
+                <div class="admin-form-actions">
+                  <button class="btn btn-max" type="submit"><i class="fa-solid fa-plus me-2"></i><span data-admin-submit-label>Add Product</span></button>
+                  <button class="btn btn-outline-max d-none" type="button" data-admin-cancel-edit aria-label="Cancel product editing" title="Cancel editing"><i class="fa-solid fa-xmark"></i></button>
+                </div>
               </form>
             </div>
           </div>
@@ -789,14 +1157,14 @@ function renderAdmin() {
                   <tbody>
                     ${allProducts.map((product) => `
                       <tr>
-                        <td>${product.name}</td>
-                        <td>${product.category}</td>
+                        <td>${escapeHtml(product.name)}</td>
+                        <td>${escapeHtml(product.category)}</td>
                         <td>${money(product.price)}</td>
                         <td>${product.stock}</td>
                         <td>${product.sold}</td>
                         <td class="text-end">
-                          <button class="btn btn-sm btn-outline-max" data-admin-edit="${product.id}"><i class="fa-solid fa-pen"></i></button>
-                          <button class="btn btn-sm btn-outline-danger" data-admin-delete="${product.id}"><i class="fa-solid fa-trash"></i></button>
+                          <button class="btn btn-sm btn-outline-max icon-button" data-admin-edit="${product.id}" aria-label="Edit ${escapeHtml(product.name)}" title="Edit product"><i class="fa-solid fa-pen"></i></button>
+                          <button class="btn btn-sm btn-outline-danger icon-button" data-admin-delete="${product.id}" aria-label="Delete ${escapeHtml(product.name)}" title="Delete product"><i class="fa-solid fa-trash"></i></button>
                         </td>
                       </tr>
                     `).join("")}
@@ -810,15 +1178,19 @@ function renderAdmin() {
       <section class="tab-pane fade" id="ordersTab">
         <div class="panel p-4">
           <h2 class="h5 mb-3">Order Management</h2>
-          ${orders.length ? orders.map((order) => `
+          ${orders.length ? [...orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map((order) => `
             <div class="admin-row">
               <div>
-                <strong>Order #${order.id}</strong>
-                <p class="small text-muted-max mb-0">${order.customer.name} - ${order.customer.email} - ${new Date(order.createdAt).toLocaleString()}</p>
+                <strong>${escapeHtml(order.code || `MT-${order.id}`)}</strong>
+                <p class="small text-muted-max mb-1">${escapeHtml(order.customer?.name || "Customer")} - ${escapeHtml(order.customer?.email || "No email")} - ${new Date(order.createdAt).toLocaleString()}</p>
+                <p class="small mb-0">${(order.items || []).map((item) => `${escapeHtml(item.name || item.product?.name || "Product")} x ${Number(item.quantity || 1)}`).join(" &middot; ")}</p>
               </div>
-              <div class="text-end">
-                <strong class="price">${money(order.total)}</strong>
-                <button class="btn btn-sm btn-outline-danger ms-2" data-admin-order-delete="${order.id}"><i class="fa-solid fa-trash"></i></button>
+              <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
+                <strong class="price me-1">${money(order.total)}</strong>
+                <select class="form-select form-select-sm w-auto" data-admin-order-status="${order.id}" aria-label="Status for order ${escapeHtml(order.code || `MT-${order.id}`)}">
+                  ${["Pending", "Processing", "Shipped", "Completed", "Cancelled"].map((status) => `<option value="${status}" ${status === (order.status || "Pending") ? "selected" : ""}>${status}</option>`).join("")}
+                </select>
+                <button class="btn btn-sm btn-outline-danger icon-button" data-admin-order-delete="${order.id}" aria-label="Delete order ${escapeHtml(order.code || `MT-${order.id}`)}" title="Delete order"><i class="fa-solid fa-trash"></i></button>
               </div>
             </div>
           `).join("") : '<p class="text-muted-max mb-0">No orders have been placed.</p>'}
@@ -833,12 +1205,12 @@ function renderAdmin() {
               <tbody>
                 ${users.map((user) => `
                   <tr>
-                    <td>${user.name}</td>
-                    <td>${user.email}</td>
-                    <td><span class="badge ${user.role === "admin" ? "text-bg-primary" : "text-bg-secondary"}">${user.role || "customer"}</span></td>
+                    <td>${escapeHtml(user.name)}</td>
+                    <td>${escapeHtml(user.email)}</td>
+                    <td><span class="badge ${user.role === "admin" ? "text-bg-primary" : "text-bg-secondary"}">${escapeHtml(user.role || "customer")}</span></td>
                     <td class="text-end">
-                      <button class="btn btn-sm btn-outline-max" data-admin-role="${user.email}"><i class="fa-solid fa-user-shield"></i></button>
-                      <button class="btn btn-sm btn-outline-danger" data-admin-user-delete="${user.email}" ${user.email === currentUser().email ? "disabled" : ""}><i class="fa-solid fa-trash"></i></button>
+                      <button class="btn btn-sm btn-outline-max icon-button" data-admin-role="${escapeHtml(user.email)}" aria-label="Change role for ${escapeHtml(user.name)}" title="Change role" ${user.email === currentUser().email ? "disabled" : ""}><i class="fa-solid fa-user-shield"></i></button>
+                      <button class="btn btn-sm btn-outline-danger icon-button" data-admin-user-delete="${escapeHtml(user.email)}" aria-label="Delete ${escapeHtml(user.name)}" title="Delete user" ${user.email === currentUser().email ? "disabled" : ""}><i class="fa-solid fa-trash"></i></button>
                     </td>
                   </tr>
                 `).join("")}
@@ -847,39 +1219,107 @@ function renderAdmin() {
           </div>
         </div>
       </section>
+      <section class="tab-pane fade" id="messagesTab">
+        <div class="panel p-4">
+          <h2 class="h5 mb-3">Customer Messages</h2>
+          ${messages.length ? [...messages].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map((message) => `
+            <div class="admin-row">
+              <div>
+                <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                  <strong>${escapeHtml(message.subject)}</strong>
+                  <span class="status-badge">${escapeHtml(message.status || "New")}</span>
+                </div>
+                <p class="small text-muted-max mb-1">${escapeHtml(message.name)} - ${escapeHtml(message.email)} - ${new Date(message.createdAt).toLocaleString()}</p>
+                <p class="mb-0">${escapeHtml(message.message)}</p>
+              </div>
+              <div class="d-flex gap-2">
+                ${message.status === "New" ? `<button class="btn btn-sm btn-outline-max" data-admin-message-read="${message.id}"><i class="fa-solid fa-check me-1"></i>Mark Read</button>` : ""}
+                <button class="btn btn-sm btn-outline-danger icon-button" data-admin-message-delete="${message.id}" aria-label="Delete message from ${escapeHtml(message.name)}" title="Delete message"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </div>
+          `).join("") : '<p class="text-muted-max mb-0">No customer messages yet.</p>'}
+        </div>
+      </section>
     </div>
   `;
 
   bindAdminActions();
+  if (activeTab !== "productsTab") {
+    const trigger = target.querySelector(`[data-bs-target="#${activeTab}"]`);
+    if (trigger && window.bootstrap?.Tab) {
+      window.bootstrap.Tab.getOrCreateInstance(trigger).show();
+    }
+  }
 }
 
 function bindAdminActions() {
   const productForm = document.querySelector("[data-admin-product-form]");
+  const formTitle = document.querySelector("[data-admin-form-title]");
+  const submitLabel = document.querySelector("[data-admin-submit-label]");
+  const cancelEditButton = document.querySelector("[data-admin-cancel-edit]");
+  const productMessage = document.querySelector("[data-admin-product-message]");
+
+  function resetProductForm() {
+    if (!productForm) return;
+    productForm.reset();
+    productForm.elements.id.value = "";
+    formTitle.textContent = "Add Product";
+    submitLabel.textContent = "Add Product";
+    cancelEditButton.classList.add("d-none");
+    productMessage.className = "d-none";
+  }
+
   if (productForm) {
     productForm.addEventListener("submit", (event) => {
       event.preventDefault();
       const data = Object.fromEntries(new FormData(productForm).entries());
       const allProducts = products();
-      allProducts.push({
-        id: Date.now(),
-        name: data.name,
-        category: data.category,
+      const productId = Number(data.id);
+      let imageUrl;
+
+      try {
+        imageUrl = new URL(data.image);
+        if (!['http:', 'https:'].includes(imageUrl.protocol)) throw new Error("Unsupported image URL");
+      } catch (error) {
+        productMessage.textContent = "Enter a valid HTTP or HTTPS image URL.";
+        productMessage.className = "alert alert-danger";
+        return;
+      }
+
+      const productData = {
+        name: cleanText(data.name, 100),
+        category: cleanText(data.category, 50),
         price: Number(data.price),
         stock: Number(data.stock),
         sold: Number(data.sold),
         rating: Number(data.rating),
-        image: data.image,
-        description: data.description,
-        specs: { Status: "Admin managed", Warranty: "12 months", Source: "Browser database" }
-      });
+        image: imageUrl.href,
+        description: cleanText(data.description, 350)
+      };
+
+      const existingProduct = allProducts.find((product) => product.id === productId);
+      if (existingProduct) {
+        Object.assign(existingProduct, productData);
+      } else {
+        allProducts.push({
+          id: Date.now(),
+          ...productData,
+          specs: { Status: "Admin managed", Warranty: "12 months", Source: "Browser database" }
+        });
+      }
+
       setData(STORAGE_KEYS.products, allProducts);
       renderAdmin();
     });
+
+    cancelEditButton.addEventListener("click", resetProductForm);
   }
 
   document.querySelectorAll("[data-admin-delete]").forEach((button) => {
     button.addEventListener("click", () => {
       const id = Number(button.dataset.adminDelete);
+      const product = products().find((entry) => entry.id === id);
+      if (!window.confirm(`Delete ${product?.name || "this product"}? This cannot be undone.`)) return;
       setData(STORAGE_KEYS.products, products().filter((product) => product.id !== id));
       setData(STORAGE_KEYS.cart, getData(STORAGE_KEYS.cart, []).filter((item) => item.id !== id));
       renderAdmin();
@@ -891,29 +1331,47 @@ function bindAdminActions() {
     button.addEventListener("click", () => {
       const allProducts = products();
       const product = allProducts.find((entry) => entry.id === Number(button.dataset.adminEdit));
-      const newPrice = prompt("Enter new price:", product.price);
-      if (newPrice === null) return;
-      const newSold = prompt("Enter sold quantity:", product.sold);
-      if (newSold === null) return;
-      const newStock = prompt("Enter stock quantity:", product.stock);
-      if (newStock === null) return;
-      product.price = Number.isNaN(Number(newPrice)) ? product.price : Number(newPrice);
-      product.sold = Number.isNaN(Number(newSold)) ? product.sold : Number(newSold);
-      product.stock = Number.isNaN(Number(newStock)) ? product.stock : Math.max(0, Number(newStock));
-      setData(STORAGE_KEYS.products, allProducts);
-      renderAdmin();
+      if (!product || !productForm) return;
+
+      productForm.elements.id.value = product.id;
+      productForm.elements.name.value = product.name;
+      productForm.elements.category.value = product.category;
+      productForm.elements.price.value = product.price;
+      productForm.elements.stock.value = product.stock;
+      productForm.elements.sold.value = product.sold;
+      productForm.elements.rating.value = product.rating;
+      productForm.elements.image.value = product.image;
+      productForm.elements.description.value = product.description;
+      formTitle.textContent = `Edit ${product.name}`;
+      submitLabel.textContent = "Save Changes";
+      cancelEditButton.classList.remove("d-none");
+      productMessage.className = "d-none";
+      productForm.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });
 
   document.querySelector("[data-admin-reset-products]")?.addEventListener("click", () => {
+    if (!window.confirm("Reset the full catalog to the MAXTECH starter products?")) return;
     setData(STORAGE_KEYS.products, starterProducts);
+    localStorage.setItem(STORAGE_KEYS.catalogVersion, String(CATALOG_VERSION));
     renderAdmin();
+  });
+
+  document.querySelectorAll("[data-admin-order-status]").forEach((select) => {
+    select.addEventListener("change", () => {
+      const orders = getData(STORAGE_KEYS.orders, []);
+      const order = orders.find((entry) => entry.id === Number(select.dataset.adminOrderStatus));
+      if (!order) return;
+      order.status = select.value;
+      setData(STORAGE_KEYS.orders, orders);
+    });
   });
 
   document.querySelectorAll("[data-admin-order-delete]").forEach((button) => {
     button.addEventListener("click", () => {
+      if (!window.confirm("Delete this order record? This cannot be undone.")) return;
       setData(STORAGE_KEYS.orders, getData(STORAGE_KEYS.orders, []).filter((order) => order.id !== Number(button.dataset.adminOrderDelete)));
-      renderAdmin();
+      renderAdmin("ordersTab");
     });
   });
 
@@ -921,12 +1379,10 @@ function bindAdminActions() {
     button.addEventListener("click", () => {
       const users = getData(STORAGE_KEYS.users, []);
       const user = users.find((entry) => entry.email === button.dataset.adminRole);
+      if (!user || user.email === currentUser()?.email) return;
       user.role = user.role === "admin" ? "customer" : "admin";
       setData(STORAGE_KEYS.users, users);
-      if (user.email === currentUser().email) {
-        setData(STORAGE_KEYS.currentUser, { name: user.name, email: user.email, role: user.role });
-      }
-      renderAdmin();
+      renderAdmin("usersTab");
       updateNav();
     });
   });
@@ -934,8 +1390,28 @@ function bindAdminActions() {
   document.querySelectorAll("[data-admin-user-delete]").forEach((button) => {
     button.addEventListener("click", () => {
       const email = button.dataset.adminUserDelete;
+      if (email === currentUser()?.email || !window.confirm(`Delete the account for ${email}?`)) return;
       setData(STORAGE_KEYS.users, getData(STORAGE_KEYS.users, []).filter((user) => user.email !== email));
-      renderAdmin();
+      renderAdmin("usersTab");
+    });
+  });
+
+  document.querySelectorAll("[data-admin-message-read]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const messages = getData(STORAGE_KEYS.messages, []);
+      const message = messages.find((entry) => entry.id === Number(button.dataset.adminMessageRead));
+      if (!message) return;
+      message.status = "Read";
+      setData(STORAGE_KEYS.messages, messages);
+      renderAdmin("messagesTab");
+    });
+  });
+
+  document.querySelectorAll("[data-admin-message-delete]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (!window.confirm("Delete this customer message?")) return;
+      setData(STORAGE_KEYS.messages, getData(STORAGE_KEYS.messages, []).filter((message) => message.id !== Number(button.dataset.adminMessageDelete)));
+      renderAdmin("messagesTab");
     });
   });
 }
@@ -946,13 +1422,27 @@ function bindContact() {
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    form.innerHTML = '<div class="alert alert-success mb-0"><h1 class="h4">Message sent.</h1><p class="mb-0">The MAXTECH team will contact you soon.</p></div>';
+    const data = Object.fromEntries(new FormData(form).entries());
+    const messages = getData(STORAGE_KEYS.messages, []);
+    messages.push({
+      id: Date.now(),
+      name: cleanText(data.name, 80),
+      email: String(data.email || "").trim().toLowerCase(),
+      subject: cleanText(data.subject, 120),
+      message: cleanText(data.message, 1000),
+      status: "New",
+      createdAt: new Date().toISOString()
+    });
+    setData(STORAGE_KEYS.messages, messages);
+    form.innerHTML = '<div class="alert alert-success mb-0"><h1 class="h4">Message sent.</h1><p class="mb-0">Your message has been saved and the MAXTECH team will contact you soon.</p></div>';
   });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   seedProducts();
   seedAdminUser();
+  renderFooter();
+  bindNumericInputs();
   updateNav();
   renderBestSellers();
   renderProductsPage();
