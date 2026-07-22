@@ -382,28 +382,59 @@ function currentUser() {
 }
 
 function renderFooter() {
+  const isSignedIn = Boolean(currentUser());
+  const accountHref = isSignedIn ? "profile.html" : "login.html";
+  const accountLabel = isSignedIn ? "My Profile" : "My Account";
+
   document.querySelectorAll("[data-site-footer]").forEach((footer) => {
     footer.innerHTML = `
       <div class="container">
-        <div class="row gy-3 align-items-center">
+        <div class="row gy-4 footer-main">
           <div class="col-lg-4">
-            <a class="navbar-brand text-white" href="index.html"><span class="brand-mark">MAX</span>TECH</a>
-            <p class="small text-muted-max mb-0 mt-1">Technology for work, play, and everything between.</p>
+            <a class="footer-brand" href="index.html"><span class="brand-mark">MAX</span>TECH</a>
+            <p class="footer-copy">Performance technology for productive work, immersive play, and connected everyday life.</p>
+            <div class="footer-assurance">
+              <span><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i>Stock-aware cart</span>
+              <span><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>Order history</span>
+            </div>
           </div>
-          <div class="col-lg-5 footer-contact small">
-            <a href="mailto:support@maxtech.com"><i class="fa-solid fa-envelope brand-mark me-2"></i>support@maxtech.com</a>
-            <a href="tel:+15550188"><i class="fa-solid fa-phone brand-mark me-2"></i>+1 555 0188</a>
+          <div class="col-6 col-md-3 col-lg-2">
+            <h2 class="footer-heading">Shop</h2>
+            <ul class="footer-links">
+              <li><a href="products.html">All Products</a></li>
+              <li><a href="index.html#best-sellers">Best Sellers</a></li>
+              <li><a href="cart.html">Shopping Cart</a></li>
+            </ul>
           </div>
-          <div class="col-lg-3 text-lg-end">
-            <a class="social-link" href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="MAXTECH on Facebook" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-            <a class="social-link" href="https://x.com/" target="_blank" rel="noopener noreferrer" aria-label="MAXTECH on X" title="X"><i class="fa-brands fa-x-twitter"></i></a>
-            <a class="social-link" href="https://zalo.me/" target="_blank" rel="noopener noreferrer" aria-label="MAXTECH on Zalo" title="Zalo"><i class="fa-solid fa-comment-dots"></i></a>
-            <a class="social-link" href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="MAXTECH on Instagram" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <div class="col-6 col-md-3 col-lg-2">
+            <h2 class="footer-heading">Customer Care</h2>
+            <ul class="footer-links">
+              <li><a href="contact.html">Contact Support</a></li>
+              <li><a href="${accountHref}">${accountLabel}</a></li>
+              <li><a href="checkout.html">Go to Checkout</a></li>
+            </ul>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <h2 class="footer-heading">Contact MAXTECH</h2>
+            <ul class="footer-contact-list">
+              <li><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span>123 Innovation Street, New York, USA</span></li>
+              <li><i class="fa-solid fa-envelope" aria-hidden="true"></i><a href="mailto:support@maxtech.com">support@maxtech.com</a></li>
+              <li><i class="fa-solid fa-phone" aria-hidden="true"></i><a href="tel:+15550188">+1 555 0188</a></li>
+            </ul>
+            <div class="footer-socials" aria-label="MAXTECH social media">
+              <a class="social-link" href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="MAXTECH on Facebook" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+              <a class="social-link" href="https://x.com/" target="_blank" rel="noopener noreferrer" aria-label="MAXTECH on X" title="X"><i class="fa-brands fa-x-twitter"></i></a>
+              <a class="social-link" href="https://zalo.me/" target="_blank" rel="noopener noreferrer" aria-label="MAXTECH on Zalo" title="Zalo"><i class="fa-solid fa-comment-dots"></i></a>
+              <a class="social-link" href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="MAXTECH on Instagram" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            </div>
           </div>
         </div>
-        <div class="footer-bottom d-flex flex-wrap justify-content-between gap-2 small text-muted-max">
+        <div class="footer-bottom d-flex flex-wrap justify-content-between align-items-center gap-3 small text-muted-max">
           <span>&copy; ${new Date().getFullYear()} MAXTECH. All rights reserved.</span>
-          <span>123 Innovation Street, New York, USA</span>
+          <div class="footer-payment">
+            <span><i class="fa-solid fa-user-lock" aria-hidden="true"></i>Account checkout</span>
+            <span><i class="fa-solid fa-money-bill-wave" aria-hidden="true"></i>Cash or bank transfer</span>
+          </div>
         </div>
       </div>
     `;
