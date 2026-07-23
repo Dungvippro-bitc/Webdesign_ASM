@@ -24,7 +24,7 @@ const starterProducts = [
   {
     id: 2,
     name: "NovaPhone X",
-    category: "Phones",
+    category: "Smartphones",
     price: 899,
     stock: 24,
     sold: 428,
@@ -36,7 +36,7 @@ const starterProducts = [
   {
     id: 3,
     name: "PulseBuds Max",
-    category: "Audio",
+    category: "Headphones",
     price: 179,
     stock: 62,
     sold: 389,
@@ -60,7 +60,7 @@ const starterProducts = [
   {
     id: 5,
     name: "VisionView 27 Monitor",
-    category: "Accessories",
+    category: "Monitors",
     price: 349,
     stock: 31,
     sold: 201,
@@ -96,7 +96,7 @@ const starterProducts = [
   {
     id: 8,
     name: "SoundCore Studio Headset",
-    category: "Audio",
+    category: "Headphones",
     price: 249,
     stock: 27,
     sold: 176,
@@ -272,10 +272,36 @@ const starterProducts = [
     image: "https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?auto=format&fit=crop&w=900&q=80",
     description: "A standalone virtual reality headset with sharp visuals and room-scale tracking.",
     specs: { Display: "Dual 2K", Refresh: "120Hz", Tracking: "Inside-out 6DoF", Storage: "256GB" }
+  },
+  {
+    id: 23,
+    name: "Apple iPhone 16 Pro",
+    brand: "Apple",
+    category: "Smartphones",
+    price: 1199,
+    stock: 21,
+    sold: 491,
+    rating: 4.9,
+    image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    description: "A premium iPhone with pro-grade cameras, fast performance, and a refined titanium design.",
+    specs: { Chipset: "Apple A18 Pro", Display: "6.3-inch OLED", Storage: "256GB", Camera: "48MP Fusion system" }
+  },
+  {
+    id: 24,
+    name: "Samsung Galaxy S25 Ultra",
+    brand: "Samsung",
+    category: "Smartphones",
+    price: 1299,
+    stock: 19,
+    sold: 438,
+    rating: 4.8,
+    image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=900&q=80",
+    description: "A flagship Android smartphone with an expansive display, advanced cameras, and S Pen control.",
+    specs: { Chipset: "Snapdragon 8 Elite", Display: "6.9-inch Dynamic AMOLED", Storage: "512GB", Camera: "200MP wide camera" }
   }
-];
+].map((product) => ({ brand: "MAXTECH", ...product }));
 
-const CATALOG_VERSION = 2;
+const CATALOG_VERSION = 3;
 
 function getData(key, fallback) {
   try {
@@ -313,6 +339,32 @@ function bindNumericInputs() {
   });
 }
 
+async function createPasswordCredentials(password) {
+  if (!window.crypto?.subtle) {
+    return { password };
+  }
+
+  const salt = window.crypto.randomUUID
+    ? window.crypto.randomUUID()
+    : Array.from(window.crypto.getRandomValues(new Uint32Array(4)), (value) => value.toString(16)).join("");
+  const encoded = new TextEncoder().encode(`${salt}:${password}`);
+  const digest = await window.crypto.subtle.digest("SHA-256", encoded);
+  const passwordHash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+  return { passwordSalt: salt, passwordHash };
+}
+
+async function passwordMatches(user, password) {
+  if (!user) return false;
+  if (!user.passwordHash || !user.passwordSalt || !window.crypto?.subtle) {
+    return user.password === password;
+  }
+
+  const encoded = new TextEncoder().encode(`${user.passwordSalt}:${password}`);
+  const digest = await window.crypto.subtle.digest("SHA-256", encoded);
+  const passwordHash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+  return passwordHash === user.passwordHash;
+}
+
 function safeReturnPage(value) {
   const allowedPages = new Set(["index.html", "products.html", "cart.html", "checkout.html", "profile.html", "admin.html"]);
   return allowedPages.has(value) ? value : "index.html";
@@ -329,8 +381,17 @@ function seedProducts() {
   if (savedVersion < CATALOG_VERSION) {
     const savedProducts = getData(STORAGE_KEYS.products, []);
     const savedIds = new Set(savedProducts.map((product) => product.id));
-    const newProducts = starterProducts.filter((product) => product.id >= 11 && !savedIds.has(product.id));
-    setData(STORAGE_KEYS.products, [...savedProducts, ...newProducts]);
+    const migratedProducts = savedProducts.map((product) => {
+      const starter = starterProducts.find((entry) => entry.id === product.id);
+      return {
+        ...product,
+        brand: product.brand || starter?.brand || "MAXTECH",
+        category: savedVersion < 3 && starter ? starter.category : product.category,
+        specs: product.specs && typeof product.specs === "object" ? product.specs : starter?.specs || {}
+      };
+    });
+    const newProducts = starterProducts.filter((product) => !savedIds.has(product.id));
+    setData(STORAGE_KEYS.products, [...migratedProducts, ...newProducts]);
     localStorage.setItem(STORAGE_KEYS.catalogVersion, String(CATALOG_VERSION));
   }
 }
@@ -339,9 +400,23 @@ function normalizeProducts() {
   const savedProducts = getData(STORAGE_KEYS.products, starterProducts);
   let changed = false;
   const normalized = savedProducts.map((product) => {
-    if (typeof product.stock === "number") return product;
-    changed = true;
-    return { ...product, stock: starterProducts.find((starter) => starter.id === product.id)?.stock || 20 };
+    const starter = starterProducts.find((entry) => entry.id === product.id);
+    const normalizedProduct = { ...product };
+
+    if (typeof normalizedProduct.stock !== "number") {
+      normalizedProduct.stock = starter?.stock || 20;
+      changed = true;
+    }
+    if (!normalizedProduct.brand) {
+      normalizedProduct.brand = starter?.brand || "MAXTECH";
+      changed = true;
+    }
+    if (!normalizedProduct.specs || typeof normalizedProduct.specs !== "object") {
+      normalizedProduct.specs = starter?.specs || {};
+      changed = true;
+    }
+
+    return normalizedProduct;
   });
 
   if (changed) {
@@ -495,23 +570,25 @@ function updateNav() {
   });
 }
 
-function productCard(product) {
+function productCard(product, columnClass = "col-sm-6 col-lg-4") {
   const name = escapeHtml(product.name);
   const category = escapeHtml(product.category);
+  const brand = escapeHtml(product.brand || "MAXTECH");
   const description = escapeHtml(product.description);
   const image = escapeHtml(product.image);
 
   return `
-    <div class="col-sm-6 col-lg-4">
+    <div class="${columnClass}">
       <article class="product-card">
-        <a href="product-details.html?id=${product.id}" aria-label="View ${name}">
+        <a class="product-media" href="product-details.html?id=${product.id}" aria-label="View ${name}">
           <img src="${image}" alt="${name}" loading="lazy">
         </a>
         <div class="p-3 product-card-body">
           <div class="d-flex align-items-center justify-content-between mb-2">
-            <span class="badge text-bg-primary">${category}</span>
+            <span class="product-brand">${brand}</span>
             <span class="rating"><i class="fa-solid fa-star"></i> ${product.rating}</span>
           </div>
+          <span class="product-category mb-2">${category}</span>
           <h3 class="h5 mb-2"><a href="product-details.html?id=${product.id}">${name}</a></h3>
           <p class="text-muted-max small mb-3 product-description">${description}</p>
           <p class="small mb-3 ${product.stock > 0 ? "text-muted-max" : "text-danger"}">
@@ -578,50 +655,138 @@ function renderProductsPage() {
 
   const searchInput = document.querySelector("[data-search]");
   const categorySelect = document.querySelector("[data-category]");
+  const brandSelect = document.querySelector("[data-brand]");
   const sortSelect = document.querySelector("[data-sort]");
   const countLabel = document.querySelector("[data-product-count]");
+  const pagination = document.querySelector("[data-product-pagination]");
+  const categoryTabs = document.querySelectorAll("[data-category-tab]");
   const allProducts = products();
-  const categories = ["All", ...new Set(allProducts.map((product) => product.category))];
+  const categories = ["All", ...new Set(allProducts.map((product) => product.category).sort())];
+  const brands = ["All", ...new Set(allProducts.map((product) => product.brand || "MAXTECH").sort())];
+  const pageSize = 8;
+  let currentPage = 1;
 
-  categorySelect.innerHTML = categories.map((category) => `<option value="${category}">${category}</option>`).join("");
+  categorySelect.innerHTML = categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join("");
+  brandSelect.innerHTML = brands.map((brand) => `<option value="${escapeHtml(brand)}">${escapeHtml(brand)}</option>`).join("");
+
+  function updateCategoryTabs() {
+    categoryTabs.forEach((tab) => {
+      const active = tab.dataset.categoryTab === categorySelect.value;
+      tab.classList.toggle("active", active);
+      tab.setAttribute("aria-pressed", String(active));
+    });
+  }
+
+  function renderPagination(totalPages) {
+    if (totalPages <= 1) {
+      pagination.innerHTML = "";
+      return;
+    }
+
+    const pageButtons = Array.from({ length: totalPages }, (_, index) => index + 1)
+      .map((page) => `
+        <li class="page-item ${page === currentPage ? "active" : ""}">
+          <button class="page-link" type="button" data-catalog-page="${page}" ${page === currentPage ? 'aria-current="page"' : ""}>${page}</button>
+        </li>
+      `).join("");
+
+    pagination.innerHTML = `
+      <ul class="pagination justify-content-center mb-0">
+        <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
+          <button class="page-link" type="button" data-catalog-page="${currentPage - 1}" aria-label="Previous page" ${currentPage === 1 ? "disabled" : ""}>
+            <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+          </button>
+        </li>
+        ${pageButtons}
+        <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
+          <button class="page-link" type="button" data-catalog-page="${currentPage + 1}" aria-label="Next page" ${currentPage === totalPages ? "disabled" : ""}>
+            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+          </button>
+        </li>
+      </ul>
+    `;
+  }
 
   function applyFilters() {
     const search = searchInput.value.trim().toLowerCase();
     const category = categorySelect.value;
+    const brand = brandSelect.value;
     const sort = sortSelect.value;
     let filtered = allProducts.filter((product) => {
-      const matchesSearch = product.name.toLowerCase().includes(search) || product.category.toLowerCase().includes(search);
+      const searchableText = `${product.name} ${product.category} ${product.brand || "MAXTECH"} ${product.description}`.toLowerCase();
+      const matchesSearch = searchableText.includes(search);
       const matchesCategory = category === "All" || product.category === category;
-      return matchesSearch && matchesCategory;
+      const matchesBrand = brand === "All" || (product.brand || "MAXTECH") === brand;
+      return matchesSearch && matchesCategory && matchesBrand;
     });
 
     if (sort === "price-low") filtered.sort((a, b) => a.price - b.price);
     if (sort === "price-high") filtered.sort((a, b) => b.price - a.price);
     if (sort === "best-selling") filtered.sort((a, b) => b.sold - a.sold);
 
-    countLabel.textContent = `${filtered.length} product${filtered.length === 1 ? "" : "s"} found`;
-    grid.innerHTML = filtered.length
-      ? filtered.map(productCard).join("")
+    const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+    currentPage = Math.min(currentPage, totalPages);
+    const pageStart = (currentPage - 1) * pageSize;
+    const visibleProducts = filtered.slice(pageStart, pageStart + pageSize);
+    const pageEnd = Math.min(pageStart + pageSize, filtered.length);
+
+    countLabel.textContent = filtered.length
+      ? `${pageStart + 1}-${pageEnd} of ${filtered.length}`
+      : "0 products";
+    grid.innerHTML = visibleProducts.length
+      ? visibleProducts.map((product) => productCard(product, "col-sm-6 col-lg-4 col-xl-3")).join("")
       : '<div class="col-12"><div class="panel empty-state"><div><i class="fa-solid fa-magnifying-glass fa-2x mb-3 text-primary"></i><h2 class="h4">No products found</h2><p class="text-muted-max mb-0">Try a different keyword or category.</p></div></div></div>';
+    renderPagination(filtered.length ? totalPages : 0);
+    updateCategoryTabs();
     bindAddCartButtons();
   }
 
-  [searchInput, categorySelect, sortSelect].forEach((control) => control.addEventListener("input", applyFilters));
+  searchInput.addEventListener("input", () => {
+    currentPage = 1;
+    applyFilters();
+  });
+
+  [categorySelect, brandSelect, sortSelect].forEach((control) => {
+    control.addEventListener("change", () => {
+      currentPage = 1;
+      applyFilters();
+    });
+  });
+
+  categoryTabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      categorySelect.value = tab.dataset.categoryTab;
+      currentPage = 1;
+      applyFilters();
+    });
+  });
+
+  pagination.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-catalog-page]");
+    if (!button || button.disabled) return;
+    currentPage = Number(button.dataset.catalogPage);
+    applyFilters();
+    document.querySelector("[data-category-tabs]")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
   applyFilters();
 }
 
 function productOverviewText(product) {
   const specValues = Object.values(product.specs).join(", ");
-  return `${product.name} is designed for shoppers who want reliable ${product.category.toLowerCase()} performance with a polished MAXTECH experience. Its key configuration includes ${specValues}, making it suitable for daily productivity, entertainment, and modern digital workflows.`;
+  return `${product.name} from ${product.brand || "MAXTECH"} is designed for shoppers who want reliable ${product.category.toLowerCase()} performance. Its key configuration includes ${specValues}, making it suitable for daily productivity, entertainment, and modern digital workflows.`;
 }
 
 function productUseCase(product) {
   const useCases = {
     Laptops: "Best for study, office work, video meetings, design tasks, and portable productivity.",
     Phones: "Best for mobile photography, communication, social media, streaming, and 5G browsing.",
+    Smartphones: "Best for mobile photography, communication, social media, streaming, and fast everyday apps.",
     Audio: "Best for music, online classes, video calls, gaming audio, and focused work sessions.",
+    Headphones: "Best for music, online classes, video calls, gaming audio, and focused work sessions.",
     Computers: "Best for gaming, streaming, content creation, multitasking, and high-performance desktop work.",
     Accessories: "Best for upgrading a desk setup with better comfort, speed, accuracy, and daily usability.",
+    Monitors: "Best for gaming, design, office multitasking, media editing, and comfortable large-screen work.",
     Tablets: "Best for note taking, reading, browsing, video calls, entertainment, and lightweight creative work.",
     Wearables: "Best for fitness tracking, health monitoring, notifications, GPS workouts, and daily planning.",
     Cameras: "Best for photography, video production, streaming, meetings, and travel content.",
@@ -651,6 +816,7 @@ function renderProductDetails() {
 
   const name = escapeHtml(product.name);
   const category = escapeHtml(product.category);
+  const brand = escapeHtml(product.brand || "MAXTECH");
   const description = escapeHtml(product.description);
   const image = escapeHtml(product.image);
   document.title = `${product.name} | MAXTECH`;
@@ -661,10 +827,15 @@ function renderProductDetails() {
     </div>
     <div class="row g-4 align-items-start">
       <div class="col-lg-6">
-        <img class="detail-image rounded-2" src="${image}" alt="${name}">
+        <div class="detail-media">
+          <img class="detail-image" src="${image}" alt="${name}">
+        </div>
       </div>
       <div class="col-lg-6">
-        <span class="badge text-bg-primary mb-3">${category}</span>
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <span class="badge text-bg-primary">${category}</span>
+          <span class="product-brand">${brand}</span>
+        </div>
         <h1 class="display-6 fw-bold">${name}</h1>
         <div class="rating mb-3"><i class="fa-solid fa-star"></i> ${product.rating} rating - ${product.sold} sold</div>
         <p class="text-muted-max">${description}</p>
@@ -711,6 +882,7 @@ function renderProductDetails() {
           <h2 class="h5 mb-3">Technical Specifications</h2>
           <ul class="spec-list">
             ${Object.entries(product.specs).map(([key, value]) => `<li><span>${escapeHtml(key)}</span><strong>${escapeHtml(value)}</strong></li>`).join("")}
+            <li><span>Brand</span><strong>${brand}</strong></li>
             <li><span>Category</span><strong>${category}</strong></li>
             <li><span>Customer Rating</span><strong>${product.rating} / 5</strong></li>
             <li><span>Units Sold</span><strong>${product.sold}</strong></li>
@@ -848,6 +1020,43 @@ function bindAuth() {
   const authMessage = document.querySelector("[data-auth-message]");
   const returnPage = safeReturnPage(new URLSearchParams(window.location.search).get("return"));
 
+  function showAuthError(message) {
+    if (!authMessage) return;
+    authMessage.textContent = message;
+    authMessage.className = "alert alert-danger";
+    authMessage.focus?.();
+  }
+
+  document.querySelectorAll("[data-password-toggle]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const input = document.getElementById(button.dataset.passwordToggle);
+      if (!input) return;
+      const willShow = input.type === "password";
+      input.type = willShow ? "text" : "password";
+      button.setAttribute("aria-label", willShow ? "Hide password" : "Show password");
+      button.title = willShow ? "Hide password" : "Show password";
+      button.querySelector("i").className = `fa-solid ${willShow ? "fa-eye-slash" : "fa-eye"}`;
+    });
+  });
+
+  const registrationPassword = registerForm?.elements.password;
+  const passwordRules = document.querySelector("[data-password-rules]");
+  const passwordChecks = (password) => ({
+    length: password.length >= 8,
+    case: /[a-z]/.test(password) && /[A-Z]/.test(password),
+    number: /\d/.test(password)
+  });
+
+  registrationPassword?.addEventListener("input", () => {
+    const checks = passwordChecks(registrationPassword.value);
+    Object.entries(checks).forEach(([rule, valid]) => {
+      const item = passwordRules?.querySelector(`[data-password-rule="${rule}"]`);
+      item?.classList.toggle("valid", valid);
+      const icon = item?.querySelector("i");
+      if (icon) icon.className = `fa-solid ${valid ? "fa-circle-check" : "fa-circle"}`;
+    });
+  });
+
   if (returnPage !== "index.html") {
     document.querySelectorAll('a[href="register.html"]').forEach((link) => {
       link.href = `register.html?return=${encodeURIComponent(returnPage)}`;
@@ -858,24 +1067,50 @@ function bindAuth() {
   }
 
   if (registerForm) {
-    registerForm.addEventListener("submit", (event) => {
+    registerForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       const data = new FormData(registerForm);
       const users = getData(STORAGE_KEYS.users, []);
-      const email = data.get("email").trim().toLowerCase();
+      const name = cleanText(data.get("name"), 80);
+      const email = String(data.get("email") || "").trim().toLowerCase();
+      const phone = String(data.get("phone") || "").replace(/\D/g, "");
+      const address = cleanText(data.get("address"), 180);
+      const password = String(data.get("password") || "");
+      const confirmPassword = String(data.get("confirmPassword") || "");
+      const checks = passwordChecks(password);
 
-      if (users.some((user) => user.email === email)) {
-        authMessage.textContent = "An account with this email already exists.";
-        authMessage.className = "alert alert-danger";
+      if (name.length < 2) {
+        showAuthError("Enter your full name.");
         return;
       }
 
+      if (phone.length < 8 || phone.length > 15) {
+        showAuthError("Enter a phone number containing 8 to 15 digits.");
+        return;
+      }
+
+      if (!Object.values(checks).every(Boolean)) {
+        showAuthError("Use at least 8 characters with uppercase, lowercase, and a number.");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showAuthError("The password confirmation does not match.");
+        return;
+      }
+
+      if (users.some((user) => user.email === email)) {
+        showAuthError("An account with this email already exists.");
+        return;
+      }
+
+      const credentials = await createPasswordCredentials(password);
       const user = {
-        name: cleanText(data.get("name"), 80),
+        name,
         email,
-        password: data.get("password"),
-        phone: (data.get("phone") || "").replace(/\D/g, ""),
-        address: cleanText(data.get("address"), 180),
+        ...credentials,
+        phone,
+        address,
         role: "customer",
         createdAt: new Date().toISOString()
       };
@@ -887,17 +1122,23 @@ function bindAuth() {
   }
 
   if (loginForm) {
-    loginForm.addEventListener("submit", (event) => {
+    loginForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       const data = new FormData(loginForm);
-      const email = data.get("email").trim().toLowerCase();
-      const password = data.get("password");
-      const user = getData(STORAGE_KEYS.users, []).find((entry) => entry.email === email && entry.password === password);
+      const email = String(data.get("email") || "").trim().toLowerCase();
+      const password = String(data.get("password") || "");
+      const users = getData(STORAGE_KEYS.users, []);
+      const user = users.find((entry) => entry.email === email);
 
-      if (!user) {
-        authMessage.textContent = "Invalid email or password.";
-        authMessage.className = "alert alert-danger";
+      if (!await passwordMatches(user, password)) {
+        showAuthError("The email account or password is incorrect.");
         return;
+      }
+
+      if (user.password && window.crypto?.subtle) {
+        Object.assign(user, await createPasswordCredentials(password));
+        delete user.password;
+        setData(STORAGE_KEYS.users, users);
       }
 
       setData(STORAGE_KEYS.currentUser, { name: user.name, email: user.email, role: user.role || "customer" });
@@ -1113,6 +1354,18 @@ function isAdmin() {
   return Boolean(user && user.role === "admin");
 }
 
+function adminSpecificationRow(key = "", value = "") {
+  return `
+    <div class="admin-spec-row">
+      <input class="form-control" name="specKey" value="${escapeHtml(key)}" placeholder="Specification name" aria-label="Specification name">
+      <input class="form-control" name="specValue" value="${escapeHtml(value)}" placeholder="Specification value" aria-label="Specification value">
+      <button class="btn btn-outline-danger icon-button" type="button" data-admin-spec-remove aria-label="Remove specification" title="Remove specification">
+        <i class="fa-solid fa-trash" aria-hidden="true"></i>
+      </button>
+    </div>
+  `;
+}
+
 function renderAdmin(activeTab = "productsTab") {
   const target = document.querySelector("[data-admin]");
   if (!target) return;
@@ -1153,14 +1406,29 @@ function renderAdmin(activeTab = "productsTab") {
     <div class="tab-content">
       <section class="tab-pane fade show active" id="productsTab">
         <div class="row g-4">
-          <div class="col-lg-4">
+          <div class="col-lg-5">
             <div class="panel p-4">
               <h2 class="h5 mb-3" data-admin-form-title>Add Product</h2>
               <div class="d-none" data-admin-product-message></div>
               <form data-admin-product-form>
                 <input name="id" type="hidden">
                 <div class="mb-3"><label class="form-label" for="adminProductName">Product name</label><input class="form-control" id="adminProductName" name="name" required></div>
-                <div class="mb-3"><label class="form-label" for="adminProductCategory">Category</label><input class="form-control" id="adminProductCategory" name="category" required></div>
+                <div class="row g-2 mb-3">
+                  <div class="col-sm-6">
+                    <label class="form-label" for="adminProductBrand">Brand</label>
+                    <input class="form-control" id="adminProductBrand" name="brand" list="adminBrandOptions" required>
+                    <datalist id="adminBrandOptions">
+                      ${[...new Set(allProducts.map((product) => product.brand || "MAXTECH"))].sort().map((brand) => `<option value="${escapeHtml(brand)}"></option>`).join("")}
+                    </datalist>
+                  </div>
+                  <div class="col-sm-6">
+                    <label class="form-label" for="adminProductCategory">Category</label>
+                    <input class="form-control" id="adminProductCategory" name="category" list="adminCategoryOptions" required>
+                    <datalist id="adminCategoryOptions">
+                      ${[...new Set(allProducts.map((product) => product.category))].sort().map((category) => `<option value="${escapeHtml(category)}"></option>`).join("")}
+                    </datalist>
+                  </div>
+                </div>
                 <div class="row g-2 mb-3">
                   <div class="col-6"><label class="form-label" for="adminProductPrice">Price</label><input class="form-control" id="adminProductPrice" name="price" type="number" min="1" step="0.01" required></div>
                   <div class="col-6"><label class="form-label" for="adminProductStock">Stock</label><input class="form-control" id="adminProductStock" name="stock" type="number" min="0" required></div>
@@ -1169,6 +1437,17 @@ function renderAdmin(activeTab = "productsTab") {
                 </div>
                 <div class="mb-3"><label class="form-label" for="adminProductImage">Image URL</label><input class="form-control" id="adminProductImage" name="image" type="url" required></div>
                 <div class="mb-3"><label class="form-label" for="adminProductDescription">Description</label><textarea class="form-control" id="adminProductDescription" name="description" rows="4" required></textarea></div>
+                <div class="admin-spec-editor mb-4">
+                  <div class="d-flex align-items-center justify-content-between gap-3 mb-2">
+                    <label class="form-label mb-0">Technical specifications</label>
+                    <button class="btn btn-sm btn-outline-max" type="button" data-admin-spec-add>
+                      <i class="fa-solid fa-plus me-1" aria-hidden="true"></i>Add specification
+                    </button>
+                  </div>
+                  <div class="admin-spec-list" data-admin-spec-list>
+                    ${adminSpecificationRow()}
+                  </div>
+                </div>
                 <div class="admin-form-actions">
                   <button class="btn btn-max" type="submit"><i class="fa-solid fa-plus me-2"></i><span data-admin-submit-label>Add Product</span></button>
                   <button class="btn btn-outline-max d-none" type="button" data-admin-cancel-edit aria-label="Cancel product editing" title="Cancel editing"><i class="fa-solid fa-xmark"></i></button>
@@ -1176,7 +1455,7 @@ function renderAdmin(activeTab = "productsTab") {
               </form>
             </div>
           </div>
-          <div class="col-lg-8">
+          <div class="col-lg-7">
             <div class="panel p-4">
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <h2 class="h5 mb-0">Product Management</h2>
@@ -1184,11 +1463,12 @@ function renderAdmin(activeTab = "productsTab") {
               </div>
               <div class="table-responsive">
                 <table class="table table-dark table-hover align-middle admin-table">
-                  <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Sold</th><th></th></tr></thead>
+                  <thead><tr><th>Name</th><th>Brand</th><th>Category</th><th>Price</th><th>Stock</th><th>Sold</th><th></th></tr></thead>
                   <tbody>
                     ${allProducts.map((product) => `
                       <tr>
                         <td>${escapeHtml(product.name)}</td>
+                        <td>${escapeHtml(product.brand || "MAXTECH")}</td>
                         <td>${escapeHtml(product.category)}</td>
                         <td>${money(product.price)}</td>
                         <td>${product.stock}</td>
@@ -1289,6 +1569,16 @@ function bindAdminActions() {
   const submitLabel = document.querySelector("[data-admin-submit-label]");
   const cancelEditButton = document.querySelector("[data-admin-cancel-edit]");
   const productMessage = document.querySelector("[data-admin-product-message]");
+  const specificationList = document.querySelector("[data-admin-spec-list]");
+  const addSpecificationButton = document.querySelector("[data-admin-spec-add]");
+
+  function setSpecificationRows(specs = {}) {
+    if (!specificationList) return;
+    const entries = Object.entries(specs);
+    specificationList.innerHTML = entries.length
+      ? entries.map(([key, value]) => adminSpecificationRow(key, value)).join("")
+      : adminSpecificationRow();
+  }
 
   function resetProductForm() {
     if (!productForm) return;
@@ -1298,15 +1588,56 @@ function bindAdminActions() {
     submitLabel.textContent = "Add Product";
     cancelEditButton.classList.add("d-none");
     productMessage.className = "d-none";
+    setSpecificationRows();
   }
+
+  addSpecificationButton?.addEventListener("click", () => {
+    specificationList?.insertAdjacentHTML("beforeend", adminSpecificationRow());
+    specificationList?.querySelector(".admin-spec-row:last-child input")?.focus();
+  });
+
+  specificationList?.addEventListener("click", (event) => {
+    const removeButton = event.target.closest("[data-admin-spec-remove]");
+    if (!removeButton) return;
+    const rows = specificationList.querySelectorAll(".admin-spec-row");
+    if (rows.length === 1) {
+      rows[0].querySelectorAll("input").forEach((input) => {
+        input.value = "";
+      });
+      return;
+    }
+    removeButton.closest(".admin-spec-row")?.remove();
+  });
 
   if (productForm) {
     productForm.addEventListener("submit", (event) => {
       event.preventDefault();
-      const data = Object.fromEntries(new FormData(productForm).entries());
+      const formData = new FormData(productForm);
+      const data = Object.fromEntries(formData.entries());
       const allProducts = products();
       const productId = Number(data.id);
+      const specKeys = formData.getAll("specKey").map((key) => cleanText(key, 50));
+      const specValues = formData.getAll("specValue").map((value) => cleanText(value, 100));
+      const specs = {};
       let imageUrl;
+
+      for (let index = 0; index < specKeys.length; index += 1) {
+        const key = specKeys[index];
+        const value = specValues[index];
+        if (!key && !value) continue;
+        if (!key || !value) {
+          productMessage.textContent = "Complete both fields for every technical specification.";
+          productMessage.className = "alert alert-danger";
+          return;
+        }
+        specs[key] = value;
+      }
+
+      if (!Object.keys(specs).length) {
+        productMessage.textContent = "Add at least one technical specification.";
+        productMessage.className = "alert alert-danger";
+        return;
+      }
 
       try {
         imageUrl = new URL(data.image);
@@ -1319,13 +1650,15 @@ function bindAdminActions() {
 
       const productData = {
         name: cleanText(data.name, 100),
+        brand: cleanText(data.brand, 50),
         category: cleanText(data.category, 50),
         price: Number(data.price),
         stock: Number(data.stock),
         sold: Number(data.sold),
         rating: Number(data.rating),
         image: imageUrl.href,
-        description: cleanText(data.description, 350)
+        description: cleanText(data.description, 350),
+        specs
       };
 
       const existingProduct = allProducts.find((product) => product.id === productId);
@@ -1334,8 +1667,7 @@ function bindAdminActions() {
       } else {
         allProducts.push({
           id: Date.now(),
-          ...productData,
-          specs: { Status: "Admin managed", Warranty: "12 months", Source: "Browser database" }
+          ...productData
         });
       }
 
@@ -1366,6 +1698,7 @@ function bindAdminActions() {
 
       productForm.elements.id.value = product.id;
       productForm.elements.name.value = product.name;
+      productForm.elements.brand.value = product.brand || "MAXTECH";
       productForm.elements.category.value = product.category;
       productForm.elements.price.value = product.price;
       productForm.elements.stock.value = product.stock;
@@ -1373,6 +1706,7 @@ function bindAdminActions() {
       productForm.elements.rating.value = product.rating;
       productForm.elements.image.value = product.image;
       productForm.elements.description.value = product.description;
+      setSpecificationRows(product.specs);
       formTitle.textContent = `Edit ${product.name}`;
       submitLabel.textContent = "Save Changes";
       cancelEditButton.classList.remove("d-none");

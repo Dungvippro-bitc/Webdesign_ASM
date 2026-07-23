@@ -10,7 +10,7 @@
   <link href="css/style.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="auth-body">
   <nav class="navbar navbar-expand-lg sticky-top">
     <div class="container">
       <a class="navbar-brand text-white" href="index.html"><span class="brand-mark">MAX</span>TECH</a>
@@ -18,31 +18,53 @@
             class="fa-solid fa-cart-shopping me-1"></i>Cart <span data-cart-count>0</span></a></div>
     </div>
   </nav>
-  <main class="section-pad">
+  <main class="auth-page">
     <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-md-7 col-lg-5">
-          <div class="auth-card p-4 p-lg-5">
-            <p class="eyebrow mb-2">Welcome back</p>
-            <h1 class="h2 fw-bold mb-4">Login to MAXTECH</h1>
-            <div data-auth-message class="d-none"></div>
-            <form data-login-form>
-              <div class="mb-3">
-                <label class="form-label" for="email">Email</label>
-                <input class="form-control" id="email" name="email" type="email" required placeholder="you@example.com">
-              </div>
-              <div class="mb-4">
-                <label class="form-label" for="password">Password</label>
-                <input class="form-control" id="password" name="password" type="password" required
-                  placeholder="Enter your password">
-              </div>
-              <button class="btn btn-max w-100" type="submit"><i
-                  class="fa-solid fa-right-to-bracket me-2"></i>Login</button>
-            </form>
-            <p class="text-muted-max mt-4 mb-0">New customer? <a class="brand-mark fw-bold" href="register.html">Create
-                an account</a></p>
+      <div class="auth-layout">
+        <section class="auth-intro" aria-labelledby="loginIntroTitle">
+          <p class="eyebrow mb-2">MAXTECH account</p>
+          <h1 id="loginIntroTitle">Welcome back to your technology hub.</h1>
+          <p>Sign in to continue checkout, review order history, and manage your account details.</p>
+          <div class="auth-benefits">
+            <div class="auth-benefit"><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i><span>Continue your saved shopping cart</span></div>
+            <div class="auth-benefit"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i><span>Track every order from one profile</span></div>
+            <div class="auth-benefit"><i class="fa-solid fa-user-shield" aria-hidden="true"></i><span>Account-based checkout authentication</span></div>
           </div>
-        </div>
+        </section>
+
+        <section class="auth-card p-4 p-lg-5" aria-labelledby="loginTitle">
+          <div class="auth-icon" aria-hidden="true"><i class="fa-solid fa-user-lock"></i></div>
+          <p class="eyebrow mb-2">Secure sign in</p>
+          <h2 class="h2 fw-bold mb-2" id="loginTitle">Login to MAXTECH</h2>
+          <p class="text-muted-max mb-4">Use the email account and password you registered with.</p>
+          <div data-auth-message class="d-none" role="status" aria-live="polite" tabindex="-1"></div>
+          <form data-login-form>
+            <div class="mb-3">
+              <label class="form-label" for="email">Email account</label>
+              <div class="auth-input">
+                <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                <input class="form-control" id="email" name="email" type="email" autocomplete="email" required
+                  placeholder="you@example.com">
+              </div>
+            </div>
+            <div class="mb-4">
+              <label class="form-label" for="password">Password</label>
+              <div class="auth-input">
+                <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                <input class="form-control" id="password" name="password" type="password"
+                  autocomplete="current-password" required placeholder="Enter your password">
+                <button class="password-toggle" type="button" data-password-toggle="password"
+                  aria-label="Show password" title="Show password">
+                  <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+            <button class="btn btn-max btn-lg w-100" type="submit">
+              <i class="fa-solid fa-right-to-bracket me-2" aria-hidden="true"></i>Login
+            </button>
+          </form>
+          <p class="auth-switch mb-0">New to MAXTECH? <a href="register.html">Create an account</a></p>
+        </section>
       </div>
     </div>
   </main>

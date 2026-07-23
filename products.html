@@ -35,17 +35,29 @@
 
   <main class="section-pad">
     <div class="container">
+      <div class="catalog-categories mb-4" data-category-tabs aria-label="Popular product categories">
+        <button class="category-tab active" type="button" data-category-tab="All"><i class="fa-solid fa-border-all" aria-hidden="true"></i><span>All</span></button>
+        <button class="category-tab" type="button" data-category-tab="Smartphones"><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i><span>Smartphones</span></button>
+        <button class="category-tab" type="button" data-category-tab="Headphones"><i class="fa-solid fa-headphones" aria-hidden="true"></i><span>Headphones</span></button>
+        <button class="category-tab" type="button" data-category-tab="Laptops"><i class="fa-solid fa-laptop" aria-hidden="true"></i><span>Laptops</span></button>
+        <button class="category-tab" type="button" data-category-tab="Monitors"><i class="fa-solid fa-display" aria-hidden="true"></i><span>Monitors</span></button>
+        <button class="category-tab" type="button" data-category-tab="Gaming"><i class="fa-solid fa-gamepad" aria-hidden="true"></i><span>Gaming</span></button>
+      </div>
       <div class="panel p-3 p-lg-4 mb-4">
         <div class="row g-3 align-items-end">
           <div class="col-lg-4">
             <label class="form-label" for="search">Search products</label>
-            <input class="form-control" id="search" data-search type="search" placeholder="Search by name or category">
+            <input class="form-control" id="search" data-search type="search" placeholder="Search name, category, or brand">
           </div>
-          <div class="col-md-6 col-lg-3">
+          <div class="col-md-6 col-lg-2">
             <label class="form-label" for="category">Category</label>
             <select class="form-select" id="category" data-category></select>
           </div>
-          <div class="col-md-6 col-lg-3">
+          <div class="col-md-6 col-lg-2">
+            <label class="form-label" for="brand">Brand</label>
+            <select class="form-select" id="brand" data-brand></select>
+          </div>
+          <div class="col-md-6 col-lg-2">
             <label class="form-label" for="sort">Sort by</label>
             <select class="form-select" id="sort" data-sort>
               <option value="default">Featured</option>
@@ -60,6 +72,7 @@
         </div>
       </div>
       <div class="row g-4" data-product-grid></div>
+      <nav class="catalog-pagination mt-5" data-product-pagination aria-label="Product catalog pages"></nav>
     </div>
   </main>
 
