@@ -645,7 +645,9 @@ function renderBestSellers() {
   if (!target) return;
 
   const topProducts = [...products()].sort((a, b) => b.sold - a.sold).slice(0, 3);
-  target.innerHTML = topProducts.map(productCard).join("");
+  target.innerHTML = topProducts
+    .map((product) => productCard(product, "col-12 col-md-4"))
+    .join("");
   bindAddCartButtons();
 }
 
